@@ -1,0 +1,17 @@
+{
+  "name": "pokemon-app",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "start": "concurrently \"yarn start:back\" \"yarn start:front\"",
+    "start:front": "yarn workspace frontend dev",
+    "start:back": "yarn workspace backend start:dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
