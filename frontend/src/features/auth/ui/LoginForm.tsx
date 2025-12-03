@@ -10,11 +10,11 @@ import { useApi } from '@/shared/api/useApi';
 import { loginSchema, LoginFormData } from '@/features/auth/model/login/login.schema';
 import { AuthResponse } from '@/shared/models/auth';
 import { routes } from '@/routes';
-import { LoginAdapter } from '@/features/auth/adapter/LoginAdapter';
+import { AuthAdapter } from '@/features/auth/adapter/AuthAdapter';
 
 const LoginForm: React.FC = () => {
   const { request, loading } = useApi<AuthResponse>();
-  const adapter = new LoginAdapter();
+  const adapter = new AuthAdapter();
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
 

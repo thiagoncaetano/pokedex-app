@@ -3,7 +3,7 @@ import { LoginFormData } from '../model/login/login.schema';
 import { routes } from '@/routes';
 import { authUtils } from '@/features/auth/lib/auth';
 
-export class LoginAdapter {
+export class AuthAdapter {
   async login(data: LoginFormData): Promise<AuthResponse> {
     const res = await fetch(routes.api.login, {
       method: 'POST',

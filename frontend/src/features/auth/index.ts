@@ -7,7 +7,7 @@ export type { AuthResponse, User } from '@/shared/models/auth';
 export { loginSchema } from '@/features/auth/model/login/login.schema';
 
 // Adapter
-export { LoginAdapter } from '@/features/auth/adapter/LoginAdapter';
+export { AuthAdapter } from '@/features/auth/adapter/AuthAdapter';
 
 // Lib
 export { SessionEntity } from './lib/session';
