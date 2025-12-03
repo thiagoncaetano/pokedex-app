@@ -1,7 +1,7 @@
-import React, { memo, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Card } from './Card';
 import { SkeletonCard } from '@/shared/ui/SkeletonCard';
-import { Pokemon } from '@/shared/types/pokemon';
+import { Pokemon } from '@/features/pokemon/types/pokemon';
 
 interface CardListProps {
   pokemons: Pokemon[];

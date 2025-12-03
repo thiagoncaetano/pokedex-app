@@ -1,4 +1,4 @@
-import { PokemonFilters, PokemonListResponse } from '@/shared/types/pokemon';
+import { PokemonFilters, PokemonListResponse } from '@/features/pokemon/types/pokemon';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001';
 

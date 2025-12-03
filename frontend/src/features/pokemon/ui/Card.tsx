@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { Pokemon } from '@/shared/types/pokemon';
+import { Pokemon } from '@/features/pokemon/types/pokemon';
 import { TypeBadge } from '@/shared/ui/TypeBadge';
 
 interface CardProps {

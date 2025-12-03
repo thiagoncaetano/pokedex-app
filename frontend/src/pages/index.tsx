@@ -4,7 +4,7 @@ import { PageHeader } from '@/shared/ui/PageHeader';
 import { TopBar } from '@/shared/ui/TopBar';
 import { SearchBar } from '@/shared/ui/SearchBar';
 import { CardList } from '@/features/pokemon/ui/CardList';
-import { Pokemon, PokemonListResponse, PokemonFilters } from '@/shared/types/pokemon';
+import { PokemonListResponse, PokemonFilters } from '@/features/pokemon/types/pokemon';
 import { SessionEntity } from '@/features/auth';
 import { routes } from '@/routes';
 import { PokemonGateway } from '@/features/pokemon/gateway';
