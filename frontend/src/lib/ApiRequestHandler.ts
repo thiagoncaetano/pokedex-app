@@ -44,10 +44,6 @@ export async function ApiRequestHandler<T = unknown>({
     
     if (response.status === 401) {
       authUtils.removeTokens();
-      if (typeof window !== 'undefined') {
-        const router = useRouter();
-        router.push(routes.login);
-      }
     }
     
     throw new ApiError(errorData.message || "API request failed", response.status);
