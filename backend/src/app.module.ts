@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { configs } from './config';
+import { PokemonsModule } from './pokemons/pokemons.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { configs } from './config';
     }),
     AuthModule,
     UsersModule,
+    PokemonsModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -17,7 +17,12 @@ export default function SignUpPage() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await SessionEntity.get(ctx);
-  if (session) return { redirect: { destination: routes.home, permanent: false } };
-  return { props: {} };
+  try {
+    const session = await SessionEntity.get(ctx);
+    if (session) return { redirect: { destination: routes.home, permanent: false } };
+    return { props: {} };
+  } catch (error) {
+    console.error('Error in getServerSideProps (signup):', error);
+    return { redirect: { destination: routes.error, permanent: false } };
+  }
 };

@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Body, HttpCode, HttpStatus, UseGuards, Request } from '@nestjs/common';
-import { LoginUseCase, LoginCommand, LoginResult } from '../../application/use-cases/LoginUseCase';
+import { AuthGuard } from '@nestjs/passport';
+import { LoginUseCase, LoginResult } from '../../application/use-cases/LoginUseCase';
 import { LoginDto } from '../../application/dto/LoginDto';
-import { JwtAuthGuard } from '../guards/JwtAuthGuard';
 import type { User } from '../../../users/domain/entities/User';
 import type { SessionRepository } from '../../domain/repositories/ISessionRepository';
 import { SESSION_REPOSITORY_TOKEN } from '../../domain/repositories/ISessionRepository';
@@ -30,7 +30,7 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   async getMe(@Request() req: AuthenticatedRequest) {
     return {
       user: {
@@ -41,7 +41,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   async logout(@Request() req: AuthenticatedRequest) {
     const token = req.headers.authorization?.replace('Bearer ', '');
