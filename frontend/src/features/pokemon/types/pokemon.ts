@@ -9,6 +9,12 @@ export interface Pokemon {
   abilities?: string[];
 }
 
+export interface BasicPokemon {
+  id: number;
+  name: string;
+  image: string;
+}
+
 export interface PokemonFilters {
   page: number;
   perPage?: number;

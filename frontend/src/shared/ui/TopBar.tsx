@@ -44,7 +44,7 @@ export function TopBar({ user }: TopBarProps) {
           )}
           <button
             onClick={handleLogout}
-            className="bg-white/20 backdrop-blur-sm text-white p-3 rounded-xl hover:bg-white/30 transition-all duration-200 group"
+            className="bg-white/20 backdrop-blur-sm text-white p-3 rounded-xl hover:bg-white/30 transition-all duration-200 group cursor-pointer"
             title="Logout"
           >
             <svg 

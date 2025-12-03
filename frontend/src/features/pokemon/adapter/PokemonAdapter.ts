@@ -1,8 +1,8 @@
-import { Pokemon } from '../types/pokemon';
+import { Pokemon, BasicPokemon } from '../types/pokemon';
 import { routes } from '@/routes';
 
 export class PokemonAdapter {
-  async getBasicInfosByIds(ids: number[]): Promise<Pokemon[]> {
+  async getBasicInfosByIds(ids: number[]): Promise<BasicPokemon[]> {
     const response = await fetch(routes.api.pokemons.basic_infos, {
       method: 'POST',
       headers: {

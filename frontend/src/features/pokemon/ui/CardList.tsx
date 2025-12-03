@@ -1,17 +1,17 @@
 import React, { useCallback } from 'react';
 import { Card } from './Card';
 import { SkeletonCard } from '@/shared/ui/SkeletonCard';
-import { Pokemon } from '@/features/pokemon/types/pokemon';
+import { BasicPokemon } from '@/features/pokemon/types/pokemon';
 
 interface CardListProps {
-  pokemons: Pokemon[];
-  onCardClick?: (pokemon: Pokemon) => void;
+  pokemons: BasicPokemon[];
+  onCardClick?: (pokemon: BasicPokemon) => void;
 }
 
 // Main CardList Component
 export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick }) => {
   // Memoize the click handler to prevent unnecessary re-renders
-  const handleCardClick = useCallback((pokemon: Pokemon) => {
+  const handleCardClick = useCallback((pokemon: BasicPokemon) => {
     onCardClick?.(pokemon);
   }, [onCardClick]);
 
@@ -36,8 +36,7 @@ export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick }) =>
       <div className="bg-white rounded-3xl shadow-lg p-6 mx-2 mb-8">
         <div className="max-w-7xl mx-auto text-center py-12">
           <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">No Pokémon found</h3>
-          <p className="text-gray-500">Try adjusting your search or filters</p>
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">No Pokémons found</h3>
         </div>
       </div>
     );
@@ -48,7 +47,7 @@ export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick }) =>
       <div className="max-w-7xl mx-auto">
         {/* Results count */}
         <div className="mb-4 text-sm text-gray-600">
-          Found <span className="font-semibold">{pokemons.length}</span> pokémon
+          Found <span className="font-semibold">{pokemons.length}</span> {pokemons.length === 1 ? 'pokémon' : 'pokémons'}
         </div>
         
         {/* Cards grid */}
