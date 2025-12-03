@@ -1,7 +1,6 @@
 import { setCookie, destroyCookie, parseCookies } from 'nookies';
-import type { GetServerSidePropsContext, NextPageContext } from 'next';
 
-const TOKEN_KEY = 'auth_token';
+const TOKEN_KEY = process.env.NEXT_PUBLIC_AUTH_TOKEN_KEY || 'auth_token';
 
 export interface AuthTokens {
   token: string;
@@ -9,7 +8,7 @@ export interface AuthTokens {
 }
 
 export const authUtils = {
-  saveTokens: (tokens: AuthTokens, ctx?: GetServerSidePropsContext | NextPageContext) => {
+  saveTokens: (tokens: AuthTokens, ctx?: any) => {
     setCookie(ctx, TOKEN_KEY, JSON.stringify(tokens), {
       maxAge: 60 * 60,
       path: '/',
@@ -18,7 +17,7 @@ export const authUtils = {
     });
   },
 
-  getTokens: (ctx?: GetServerSidePropsContext | NextPageContext): AuthTokens | null => {
+  getTokens: (ctx?: any): AuthTokens | null => {
     const cookies = parseCookies(ctx);
     const tokenCookie = cookies[TOKEN_KEY];
     
@@ -31,7 +30,7 @@ export const authUtils = {
     }
   },
 
-  removeTokens: (ctx?: GetServerSidePropsContext | NextPageContext) => {
+  removeTokens: (ctx?: any) => {
     destroyCookie(ctx, TOKEN_KEY, { path: '/' });
   },
 
@@ -39,7 +38,7 @@ export const authUtils = {
     return new Date(tokens.expAt) <= new Date();
   },
 
-  getAuthToken: (ctx?: GetServerSidePropsContext | NextPageContext): string | null => {
+  getAuthToken: (ctx?: any): string | null => {
     const tokens = authUtils.getTokens(ctx);
     if (!tokens || authUtils.isTokenExpired(tokens)) {
       authUtils.removeTokens(ctx);

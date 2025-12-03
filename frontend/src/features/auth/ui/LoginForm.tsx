@@ -8,23 +8,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/router';
 import { useApi } from '@/shared/api/useApi';
 import { loginSchema, LoginFormData } from '@/features/auth/model/login/login.schema';
-import { LoginResponse } from '@/features/auth/model/auth.model';
+import { AuthResponse } from '@/shared/models/auth';
 import { routes } from '@/routes';
-import { useAuth } from '@/shared/hooks/useAuth';
 import { LoginAdapter } from '@/features/auth/adapter/LoginAdapter';
 
 const LoginForm: React.FC = () => {
-  const { request, loading } = useApi<LoginResponse>();
+  const { request, loading } = useApi<AuthResponse>();
   const adapter = new LoginAdapter();
   const router = useRouter();
-  const { isAuthenticated, loading: authLoading } = useAuth();
   const [showPassword, setShowPassword] = React.useState(false);
-
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.push(routes.home);
-    }
-  }, [authLoading, isAuthenticated, router]);
 
   const { 
     register, 

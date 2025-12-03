@@ -1,10 +1,10 @@
-import { LoginResponse, MeResponse } from '../model/auth.model';
+import { User, AuthResponse } from '@/shared/models/auth';
 import { LoginFormData } from '../model/login/login.schema';
 import { routes } from '@/routes';
-import { authUtils } from '../lib/auth';
+import { authUtils } from '@/features/auth/lib/auth';
 
 export class LoginAdapter {
-  async login(data: LoginFormData): Promise<LoginResponse> {
+  async login(data: LoginFormData): Promise<AuthResponse> {
     const res = await fetch(routes.api.login, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -30,7 +30,7 @@ export class LoginAdapter {
     try {
       const token = authUtils.getAuthToken();
       if (token) {
-        await fetch('/api/logout', {
+        await fetch(routes.api.logout, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -41,23 +41,6 @@ export class LoginAdapter {
       console.error('Logout error:', error);
     } finally {
       authUtils.removeTokens();
-    }
-  }
-
-  async getSession(): Promise<MeResponse | null> {
-    try {
-      const token = authUtils.getAuthToken();
-      if (!token) return null;
-
-      const res = await fetch(routes.api.me, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (!res.ok) return null;
-      return res.json();
-    } catch {
-      return null;
     }
   }
 }

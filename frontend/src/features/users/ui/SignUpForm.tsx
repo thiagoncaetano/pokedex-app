@@ -8,11 +8,11 @@ import { useRouter } from 'next/router';
 import { useApi } from '@/shared/api/useApi';
 import { UserAdapter } from '../lib/UserAdapter';
 import { userSignupSchema, UserSignupFormData } from '../model/signup.schema';
-import { UserSignupResponse } from '../model/user.model';
+import { AuthResponse } from '@/shared/models/auth';
 import { routes } from '@/routes';
 
 const SignUpForm: React.FC = () => {
-  const { request, loading } = useApi<UserSignupResponse>();
+  const { request, loading } = useApi<AuthResponse>();
   const adapter = new UserAdapter();
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);

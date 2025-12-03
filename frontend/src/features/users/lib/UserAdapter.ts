@@ -1,11 +1,11 @@
-import { User, UserSignupResponse } from '../model/user.model';
+import { User, AuthResponse } from '@/shared/models/auth';
 import { UserSignupFormData } from '../model/signup.schema';
 import { routes } from '@/routes';
 import { authUtils } from '@/features/auth/lib/auth';
 
 
 export class UserAdapter {
-  async signup(data: UserSignupFormData): Promise<UserSignupResponse> {
+  async signup(data: UserSignupFormData): Promise<AuthResponse> {
     const res = await fetch(routes.api.signup, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -27,15 +27,5 @@ export class UserAdapter {
     }
     
     return signupData;
-  }
-
-  async getSession(): Promise<{ user: User } | null> {
-    try {
-      const res = await fetch(routes.api.me);
-      if (!res.ok) return null;
-      return res.json();
-    } catch {
-      return null;
-    }
   }
 }
