@@ -1,16 +1,9 @@
-import { PokemonFilters, PokemonListResponse } from '@/features/pokemon/types/pokemon';
-
-const API_URL = process.env.API_URL || 'http://localhost:3001';
+import { PokemonListResponse } from '@/features/pokemon/types/pokemon';
+import { API_URL } from '@/shared/constants/url';
 
 export class PokemonGateway {
-  static async getPokemons(filters: PokemonFilters, token: string): Promise<PokemonListResponse> {
-    const params = new URLSearchParams();
-    if (filters.page) params.append('page', String(filters.page));
-    if (filters.perPage) params.append('perPage', String(filters.perPage));
-    if (filters.query) params.append('query', filters.query);
-    if (filters.sortBy) params.append('sortBy', filters.sortBy);
-
-    const response = await fetch(`${API_URL}/pokemons?${params.toString()}`, {
+  static async getPokemons(token: string): Promise<PokemonListResponse> {
+    const response = await fetch(`${API_URL}/pokemons/initial`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

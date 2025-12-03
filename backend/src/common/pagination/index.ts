@@ -1,4 +1,4 @@
-const PER_PAGE_DEFAULT = 10;
+const PER_PAGE_DEFAULT = 24;
 const PAGE_DEFAULT = 1;
 
 export class PaginateParams {
@@ -6,9 +6,9 @@ export class PaginateParams {
   page: number;
   perPage: number;
 
-  constructor(page: number | string, perPage: number | string) {
-    const currentPage = page && page !== '' ? Number(page) : PAGE_DEFAULT;
-    const currentPerPage = perPage && perPage !== '' ? Number(perPage) : PER_PAGE_DEFAULT;
+  constructor(page: number | string, perPage?: number | string) {
+    const currentPage = page ? Number(page) : PAGE_DEFAULT;
+    const currentPerPage = perPage ? Number(perPage) : PER_PAGE_DEFAULT;
     this.page = isNaN(currentPage) ? PAGE_DEFAULT : currentPage;
     this.perPage = isNaN(currentPerPage) ? PER_PAGE_DEFAULT : currentPerPage;
   }

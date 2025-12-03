@@ -17,7 +17,7 @@ const poppins = Poppins({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className={`${poppins.variable} antialiased`}>
+      <div className={`${poppins.variable} antialiased w-full overflow-x-hidden`}>
         <NotificationProvider>
           <Notifications />
           <Component {...pageProps} />

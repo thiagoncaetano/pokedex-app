@@ -26,9 +26,7 @@ export class ListPokemonsUseCase {
 
   async execute(command: ListPokemonsCommand): Promise<ListPokemonsResult> {
     return this.pokemonGateway.getPokemonList({
-      pagination: command.pagination,
-      query: command.query,
-      sortBy: command.sortBy,
+      pagination: command.pagination
     });
   }
 }

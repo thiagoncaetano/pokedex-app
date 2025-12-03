@@ -26,15 +26,10 @@ export class PokemonsController {
     private readonly getPokemonsBasicInfosUseCase: GetPokemonsBasicInfosUseCase
   ) {}
 
-  @Get()
+  @Get("initial")
   async getPokemons(@Query() query: any): Promise<any> {
     const command: ListPokemonsCommand = {
-      pagination: new PaginateParams(
-        query.page ? Number(query.page) : 1,
-        query.perPage ? Number(query.perPage) : 10
-      ),
-      query: query.query,
-      sortBy: query.sortBy,
+      pagination: new PaginateParams(query.page)
     };
 
     return this.listPokemonsUseCase.execute(command);

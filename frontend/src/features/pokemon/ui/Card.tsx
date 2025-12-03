@@ -53,17 +53,17 @@ export const Card = React.memo<CardProps>(({ pokemon, onClick }) => {
       }}
       onClick={handleClick}
     >
-      {/* Pokemon ID - Top Right */}
+      {/* Pokemon ID */}
       <div className="absolute top-2 right-2 text-gray-500 text-md">
         #{String(pokemon.id).padStart(3, '0')}
       </div>
 
-      {/* Pokemon Image - Centered in entire card */}
+      {/* Pokemon Image */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
         <img 
           src={pokemon.image} 
           alt={pokemon.name}
-          className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-contain"
+          className="w-[60%] h-[60%] sm:w-[70%] sm:h-[70%] md:w-[75%] md:h-[75%] object-contain"
           loading="lazy"
         />
       </div>
@@ -77,11 +77,7 @@ export const Card = React.memo<CardProps>(({ pokemon, onClick }) => {
         }}
       >
         {/* Pokemon Name */}
-        <h3 className="font-normal text-gray-900 text-center capitalize mb-1" 
-            style={{
-              fontSize: '18px',
-              letterSpacing: '0px',
-            }}>
+        <h3 className="font-normal text-gray-900 text-center capitalize mb-1 text-lg sm:text-lg md:text-lg lg:text-lg xl:text-xl">
           {pokemon.name}
         </h3>
       </div>

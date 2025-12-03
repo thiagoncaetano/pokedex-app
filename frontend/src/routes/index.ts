@@ -9,6 +9,7 @@ export const routes = {
     logout: '/api/logout',
     pokemons: {
       basic_infos: '/api/pokemons/basic_infos',
+      list: '/api/pokemons/list',
       detail: (id: number) => `/api/pokemons/${id}`,
     },
   },

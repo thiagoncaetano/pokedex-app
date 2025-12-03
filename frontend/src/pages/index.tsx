@@ -8,7 +8,7 @@ import { PokemonFilters, BasicPokemon } from '@/features/pokemon/types/pokemon';
 import { SessionEntity } from '@/features/auth';
 import { routes } from '@/routes';
 import { PokemonGateway } from '@/features/pokemon/gateway';
-import { usePokemonDetails } from '@/features/pokemon/hooks/usePokemonDetails';
+import { usePokemonList } from '@/features/pokemon/hooks/usePokemonList';
 import type { User } from '@/shared/models/auth';
 
 interface HomePageProps {
@@ -26,7 +26,7 @@ interface HomePageProps {
 
 const HomePage: NextPage<HomePageProps> = ({ pokemons, user }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const { getBasicInfosByIds } = usePokemonDetails();
+  const { getBasicInfosByIds } = usePokemonList();
 
   const { data: pokemonsData, isLoading, error } = getBasicInfosByIds(pokemons.ids);
 
@@ -65,17 +65,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (cont
     const session = await SessionEntity.get(context);
     if (!session) return { redirect: { destination: routes.login, permanent: false } };
 
-    const page = parseInt(context.query.page as string);
-    const query = context.query.query as string;
-    const sortBy = context.query.sortBy as string;
-
-    const filters: PokemonFilters = {
-      page: page || 1,
-      query,
-      sortBy,
-    };
-
-    const pokemons = await PokemonGateway.getPokemons(filters, session.tokens.token);
+    const pokemons = await PokemonGateway.getPokemons(session.tokens.token);
 
     return {
       props: {
