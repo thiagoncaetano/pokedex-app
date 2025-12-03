@@ -28,11 +28,7 @@ const HomePage: NextPage<HomePageProps> = ({ pokemons, user }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const { getBasicInfosByIds } = usePokemonList();
 
-  const { data: pokemonsData, isLoading, error } = getBasicInfosByIds(pokemons.ids);
-
-  console.log("data", pokemons)
-  // console.log("isLoading", isLoading)
-  // console.log("error", error)
+  const { data: pokemonsData, isLoading } = getBasicInfosByIds(pokemons.ids);
   
   return (
     <>
@@ -53,6 +49,7 @@ const HomePage: NextPage<HomePageProps> = ({ pokemons, user }) => {
         <CardList 
           pokemons={pokemonsData || []} 
           onCardClick={(pokemon: BasicPokemon) => console.log('Clicked on:', pokemon)}
+          isLoading={isLoading}
         />
 
       </div>

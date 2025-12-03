@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React from 'react';
 import { BasicPokemon } from '@/features/pokemon/types/pokemon';
 
 interface CardProps {
@@ -6,40 +6,6 @@ interface CardProps {
   onClick?: (pokemon: BasicPokemon) => void;
 }
 
-// Lazy Image Component
-const LazyImage: React.FC<{ src: string; alt: string; className: string }> = memo(({ src, alt, className }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isError, setIsError] = useState(false);
-
-  return (
-    <div className="relative w-full h-full">
-      {!isLoaded && !isError && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl" />
-      )}
-      
-      {isError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-xl">
-          <div className="text-4xl">🔴</div>
-        </div>
-      )}
-      
-      <img
-        src={src}
-        alt={alt}
-        className={`${className} transition-opacity duration-300 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => setIsError(true)}
-        loading="lazy"
-      />
-    </div>
-  );
-});
-
-LazyImage.displayName = 'LazyImage';
-
-// Main Card Component
 export const Card = React.memo<CardProps>(({ pokemon, onClick }) => {
   const handleClick = () => {
     onClick?.(pokemon);
@@ -84,5 +50,3 @@ export const Card = React.memo<CardProps>(({ pokemon, onClick }) => {
     </div>
   );
 });
-
-Card.displayName = 'Card';

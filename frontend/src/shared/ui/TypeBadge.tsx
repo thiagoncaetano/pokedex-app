@@ -39,5 +39,3 @@ export const TypeBadge: React.FC<TypeBadgeProps> = memo(({ type, className = '' 
     </span>
   );
 });
-
-TypeBadge.displayName = 'TypeBadge';

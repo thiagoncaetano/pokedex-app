@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, Suspense, lazy } from 'react';
 import { FilterButton } from './FilterButton';
-import { SortModal } from './SortModal';
+import { PokeballSpinner } from './PokeballSpinner';
+const SortModal = lazy(() => import('./SortModal'));
 
 interface SearchBarProps {
   searchQuery: string;
@@ -29,7 +30,6 @@ export function SearchBar({ searchQuery, onSearchChange, onFilterClick }: Search
 
   const handleSortModalClose = () => {
     setIsSortModalOpen(false);
-    // Here you can call the real sorting function
     onFilterClick();
   };
 
@@ -64,15 +64,23 @@ export function SearchBar({ searchQuery, onSearchChange, onFilterClick }: Search
         </div>
       </div>
 
-      {/* Sort Modal */}
-      <SortModal
-        isOpen={isSortModalOpen}
-        onClose={handleSortModalClose}
-        title="Sort by"
-        options={sortOptions}
-        selectedValue={selectedSort || ''}
-        onSelectChange={handleSortChange}
-      />
+      {/* Sort Modal - Lazy Loaded */}
+      {isSortModalOpen && (
+        <Suspense fallback={
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <PokeballSpinner size="lg" />
+          </div>
+        }>
+          <SortModal
+            isOpen={isSortModalOpen}
+            onClose={handleSortModalClose}
+            title="Sort by"
+            options={sortOptions}
+            selectedValue={selectedSort || ''}
+            onSelectChange={handleSortChange}
+          />
+        </Suspense>
+      )}
     </>
   );
 }

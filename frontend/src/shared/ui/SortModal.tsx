@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface SortOption {
   value: string;
@@ -14,7 +14,7 @@ interface SortModalProps {
   onSelectChange: (value: string) => void;
 }
 
-export function SortModal({ isOpen, onClose, title, options, selectedValue, onSelectChange }: SortModalProps) {
+export default function SortModal({ isOpen, onClose, title, options, selectedValue, onSelectChange }: SortModalProps) {
   const [isClosing, setIsClosing] = useState(false);
   console.log('SortModal render - selectedValue:', selectedValue);
   
