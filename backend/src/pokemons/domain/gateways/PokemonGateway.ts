@@ -14,6 +14,12 @@ export interface PokemonGateway {
     }>;
   }>;
   
+  getPokemonBasicInfo(id: number): Promise<{
+    id: number;
+    name: string;
+    image: string;
+  } | null>;
+
   getPokemonDetail(id: number): Promise<{
     id: number;
     name: string;
@@ -23,6 +29,9 @@ export interface PokemonGateway {
     abilities: Array<{ ability: { name: string } }>;
     sprites: {
       front_default: string;
+      front_shiny: string;
+      back_default: string;
+      back_shiny: string;
     };
   } | null>;
 }

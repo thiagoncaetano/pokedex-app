@@ -12,7 +12,7 @@ import type { User } from '@/shared/models/auth';
 
 interface HomePageProps {
   initialPokemons: PokemonListResponse;
-  user: User & { token: string };
+  user: User;
 }
 
 const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
@@ -64,7 +64,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (cont
     return {
       props: {
         initialPokemons: pokemons,
-        user: { ...session.currentUser, token: session.tokens.token },
+        user: { ...session.currentUser },
       },
     };
   } catch (error) {

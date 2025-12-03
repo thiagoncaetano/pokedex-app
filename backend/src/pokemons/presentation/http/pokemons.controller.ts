@@ -1,17 +1,13 @@
 import { Controller, Get, Post, Param, Query, Body, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ListPokemonsUseCase } from '../../application/use-cases/ListPokemonsUseCase';
+import { ListPokemonsUseCase, type ListPokemonsCommand } from '../../application/use-cases/ListPokemonsUseCase';
 import { GetPokemonDetailUseCase } from '../../application/use-cases/GetPokemonDetailUseCase';
 import { GetPokemonsBasicInfosUseCase } from '../../application/use-cases/GetPokemonsBasicInfosUseCase';
-import { PaginateParams, PaginatePresenter } from '../../../common/pagination';
+import { PokemonBasicInfoPresenter } from './pokemon.presenter';
+import type { PokemonDetail, PokemonBasicDetail,  PokemonListItem } from '../../domain/types';
+import { PaginateParams } from '../../../common/pagination';
 
-export interface PokemonListItem {
-  id: number;
-  name: string;
-  url: string;
-}
-
-export interface PaginatedPokemonResponse {
+export interface PokemonResponse {
   pagination: {
     page: number;
     total: number;
@@ -19,18 +15,6 @@ export interface PaginatedPokemonResponse {
     perPage: number;
   };
   results: PokemonListItem[];
-}
-
-export interface PokemonDetail {
-  id: number;
-  name: string;
-  height: number;
-  weight: number;
-  types: Array<{ type: { name: string } }>;
-  abilities: Array<{ ability: { name: string } }>;
-  sprites: {
-    front_default: string;
-  };
 }
 
 @UseGuards(AuthGuard('jwt'))
@@ -43,24 +27,17 @@ export class PokemonsController {
   ) {}
 
   @Get()
-  async list(
-    @Query('page') page: string,
-    @Query('perPage') perPage: string,
-    @Query('query') query?: string,
-    @Query('sortBy') sortBy?: string
-  ): Promise<PaginatedPokemonResponse> {
-    const paginateParams = new PaginateParams(page, perPage);
-    
-    const result = await this.listPokemonsUseCase.execute({
-      pagination: paginateParams,
-      query,
-      sortBy,
-    });
-    
-    return {
-      pagination: PaginatePresenter.render(result.pagination),
-      results: result.results,
+  async getPokemons(@Query() query: any): Promise<any> {
+    const command: ListPokemonsCommand = {
+      pagination: new PaginateParams(
+        query.page ? Number(query.page) : 1,
+        query.perPage ? Number(query.perPage) : 10
+      ),
+      query: query.query,
+      sortBy: query.sortBy,
     };
+
+    return this.listPokemonsUseCase.execute(command);
   }
 
   @Get(':id')
@@ -76,12 +53,16 @@ export class PokemonsController {
       abilities: [],
       sprites: {
         front_default: '',
+        front_shiny: '',
+        back_default: '',
+        back_shiny: '',
       },
     };
   }
 
   @Post('basic_infos')
-  async getBasicInfosByIds(@Body() body: { ids: number[] }): Promise<PokemonDetail[]> {
-    return this.getPokemonsBasicInfosUseCase.execute({ ids: body.ids });
+  async getBasicInfosByIds(@Body() body: { ids: number[] }): Promise<PokemonBasicDetail[]> {
+    const result = await this.getPokemonsBasicInfosUseCase.execute({ ids: body.ids });
+    return PokemonBasicInfoPresenter.presentBasicInfos(result);
   }
 }

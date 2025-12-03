@@ -38,7 +38,7 @@ export const authUtils = {
     return new Date(tokens.expAt) <= new Date();
   },
 
-  getAuthToken: (ctx?: any): string | null => {
+  getAuthToken: (ctx: any): string | null => {
     const tokens = authUtils.getTokens(ctx);
     if (!tokens || authUtils.isTokenExpired(tokens)) {
       authUtils.removeTokens(ctx);

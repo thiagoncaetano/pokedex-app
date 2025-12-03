@@ -1,34 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
+import { PokemonAdapter } from '../adapter/PokemonAdapter';
 
-interface PokemonDetailsResponse {
-  id: number;
-  name: string;
-  types: string[];
-  imageUrl: string;
-  height: number;
-  weight: number;
-  abilities: string[];
-}
+const adapter = new PokemonAdapter();
 
 export function usePokemonDetails() {
   const getBasicInfosByIds = (ids: number[]) => {
     return useQuery({
       queryKey: ['pokemon-basic-infos', ids],
-      queryFn: async () => {
-        const response = await fetch('/api/pokemons/details', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ids }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch pokemon basic infos');
-        }
-
-        return response.json() as Promise<PokemonDetailsResponse[]>;
-      },
+      queryFn: () => adapter.getBasicInfosByIds(ids),
       enabled: ids.length > 0,
       staleTime: 10 * 60 * 1000, // 10 minutes
     });
@@ -37,15 +16,7 @@ export function usePokemonDetails() {
   const getDetailById = (id: number) => {
     return useQuery({
       queryKey: ['pokemon-detail', id],
-      queryFn: async () => {
-        const response = await fetch(`/api/pokemons/${id}`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch pokemon detail');
-        }
-
-        return response.json() as Promise<PokemonDetailsResponse>;
-      },
+      queryFn: () => adapter.getDetailById(id),
       enabled: !!id,
       staleTime: 30 * 60 * 1000, // 30 minutes
     });

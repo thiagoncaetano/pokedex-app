@@ -1,31 +1,4 @@
-export interface Pokemon {
-  id: number;
-  name: string;
-  number: number;
-  types: string[];
-  imageUrl: string;
-  height?: number;
-  weight?: number;
-  abilities?: string[];
-}
-
-export interface PokemonListItem {
-  id: number;
-  name: string;
-  url: string;
-}
-
-export interface PokemonDetail {
-  id: number;
-  name: string;
-  height: number;
-  weight: number;
-  types: Array<{ type: { name: string } }>;
-  abilities: Array<{ ability: { name: string } }>;
-  sprites: {
-    front_default: string;
-  };
-}
+import type { Pokemon, PokemonDetail, PokemonBasicDetail } from '../../domain/types';
 
 export class PokemonPresenter {
   static presentListItem(detail: PokemonDetail): Pokemon {
@@ -43,5 +16,19 @@ export class PokemonPresenter {
 
   static presentList(details: PokemonDetail[]): Pokemon[] {
     return details.map(detail => this.presentListItem(detail));
+  }
+}
+
+export class PokemonBasicInfoPresenter {
+  static presentBasicInfo(detail: PokemonBasicDetail): PokemonBasicDetail {
+    return {
+      id: detail.id,
+      name: detail.name,
+      image: detail.image,
+    };
+  }
+
+  static presentBasicInfos(details: PokemonBasicDetail[]): PokemonBasicDetail[] {
+    return details.map(detail => this.presentBasicInfo(detail));
   }
 }

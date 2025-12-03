@@ -46,6 +46,29 @@ export class PokeApiAdapter implements PokemonGateway {
     };
   }
 
+  async getPokemonBasicInfo(id: number): Promise<{
+    id: number;
+    name: string;
+    image: string
+  } | null> {
+    const response = await fetch(`${this.baseUrl}/pokemon/${id}`);
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error(`Failed to fetch pokemon detail: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    return {
+      id: data.id,
+      name: data.name,
+      image: data.sprites.front_default
+    };
+  }
+
   async getPokemonDetail(id: number): Promise<{
     id: number;
     name: string;
@@ -55,6 +78,9 @@ export class PokeApiAdapter implements PokemonGateway {
     abilities: Array<{ ability: { name: string } }>;
     sprites: {
       front_default: string;
+      front_shiny: string;
+      back_default: string;
+      back_shiny: string;
     };
   } | null> {
     const response = await fetch(`${this.baseUrl}/pokemon/${id}`);
@@ -77,6 +103,9 @@ export class PokeApiAdapter implements PokemonGateway {
       abilities: data.abilities,
       sprites: {
         front_default: data.sprites.front_default,
+        front_shiny: data.sprites.front_shiny || '',
+        back_default: data.sprites.back_default || '',
+        back_shiny: data.sprites.back_shiny || '',
       },
     };
   }

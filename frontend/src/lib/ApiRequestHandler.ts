@@ -11,6 +11,7 @@ interface RequestOptions {
   method?: Method;
   body?: unknown;
   headers?: Record<string, string>;
+  token?: string;
 }
 
 export async function ApiRequestHandler<T = unknown>({
@@ -18,12 +19,12 @@ export async function ApiRequestHandler<T = unknown>({
   method = "GET",
   body,
   headers = {},
+  token,
 }: RequestOptions): Promise<T> {
   if (!API_URL) {
     throw new ApiError("API_URL is not configured", 500);
   }
 
-  const token = authUtils.getAuthToken();
 
   const options: RequestInit = {
     method,

@@ -5,7 +5,6 @@ import type { UserRepository } from '../../../users/domain/repositories/IUserRep
 import type { SessionRepository } from '../../../auth/domain/repositories/ISessionRepository';
 import { USER_REPOSITORY_TOKEN } from '../../../users/domain/repositories/IUserRepository';
 import { SESSION_REPOSITORY_TOKEN } from '../../../auth/domain/repositories/ISessionRepository';
-import { User } from '../../../users/domain/entities/User';
 import { Inject } from '@nestjs/common';
 
 @Injectable()
@@ -21,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sessionId: string; userId: string }): Promise<User> {
+  async validate(payload: { sessionId: string; userId: string }): Promise<any> {
     const session = await this.sessionRepo.findById(payload.sessionId);
     if (!session || !session.isActive) {
       throw new Error('Session not found or inactive');
@@ -36,6 +35,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new Error('User not found');
     }
 
-    return user;
+    return {
+      id: user.id,
+      username: user.username,
+      session: { id: session.id },
+    };
   }
 }

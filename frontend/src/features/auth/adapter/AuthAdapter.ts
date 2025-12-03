@@ -27,20 +27,8 @@ export class AuthAdapter {
   }
 
   async logout(): Promise<void> {
-    try {
-      const token = authUtils.getAuthToken();
-      if (token) {
-        await fetch(routes.api.logout, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      authUtils.removeTokens();
-    }
+    await fetch(routes.api.logout, {
+      method: 'POST'
+    });
   }
 }

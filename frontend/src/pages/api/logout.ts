@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { ApiRequestHandler, ApiError } from '@/lib/ApiRequestHandler';
+import { ApiRequestHandler } from '@/lib/ApiRequestHandler';
 import { authUtils } from '@/features/auth/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -7,21 +7,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  try {
-    const data = await ApiRequestHandler({
-      method: 'POST',
-      path: 'auth/logout',
-    });
+  const tokens = authUtils.getTokens({ req, res });
+  
+  const data = await ApiRequestHandler({
+    method: 'POST',
+    path: 'auth/logout',
+    token: tokens?.token,
+  });
 
-    authUtils.removeTokens(res);
-    
-    res.status(200).json(data);
-  } catch (err: unknown) {
-    authUtils.removeTokens(res);
-    
-    if (err instanceof ApiError) {
-      return res.status(err.status).json({ message: err.message });
-    }
-    res.status(500).json({ message: (err as Error)?.message || 'Error logging out' });
-  }
+  authUtils.removeTokens({ req, res });
+  
+  res.status(200).json(data);
 }

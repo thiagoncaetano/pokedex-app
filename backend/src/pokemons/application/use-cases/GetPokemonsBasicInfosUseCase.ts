@@ -14,7 +14,7 @@ export class GetPokemonsBasicInfosUseCase {
 
   async execute(command: GetPokemonsBasicInfosCommand) {
     const { ids } = command;
-    const promises = ids.map(id => this.pokemonGateway.getPokemonDetail(id));
+    const promises = ids.map(id => this.pokemonGateway.getPokemonBasicInfo(id));
     const results = await Promise.all(promises);
     
     return results.filter(result => result !== null);
