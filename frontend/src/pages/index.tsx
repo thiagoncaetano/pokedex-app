@@ -49,7 +49,6 @@ const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
     }
   };
 
-
   console.log("pokemons", pokemons)
   
   return (
@@ -59,7 +58,7 @@ const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
         description="Welcome back to Pokédex! Explore Pokémon, battles, and more."
       />
       
-      <div className="min-h-screen bg-primary">
+      <div className="h-screen bg-primary flex flex-col overflow-hidden">
         <TopBar user={user} />
 
         <SearchBar
@@ -68,13 +67,15 @@ const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
           onFilterClick={() => console.log('Filter clicked')}
         />
 
-        <CardList 
-          pokemons={pokemons} 
-          onCardClick={(pokemon: BasicPokemon) => console.log('Clicked on:', pokemon)}
-          isLoading={isLoading}
-          isFetchingNextPage={isFetchingNextPage}
-          onEndReached={handleScrollEnd}
-        />
+        <div className="flex-1 overflow-hidden px-1 sm:px-2 pb-2">
+          <CardList 
+            pokemons={pokemons} 
+            onCardClick={(pokemon: BasicPokemon) => console.log('Clicked on:', pokemon)}
+            isLoading={isLoading}
+            isFetchingNextPage={isFetchingNextPage}
+            onEndReached={handleScrollEnd}
+          />
+        </div>
 
       </div>
     </>

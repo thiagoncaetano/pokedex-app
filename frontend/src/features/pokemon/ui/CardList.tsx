@@ -1,8 +1,12 @@
 import React, { useCallback, useEffect, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Card } from './Card';
 import SkeletonCard from '@/shared/ui/SkeletonCard';
 import { PokeballSpinner } from '@/shared/ui/PokeballSpinner';
+import { NotFound } from '@/shared/ui/NotFound';
 import { BasicPokemon } from '@/features/pokemon/types/pokemon';
+import { useColumnCount } from '@/hooks/useColumnCount';
+import { CARD_HEIGHT, GAP } from '@/shared/constants/virtualization';
 
 interface CardListProps {
   pokemons: BasicPokemon[];
@@ -12,13 +16,28 @@ interface CardListProps {
   onEndReached?: () => void;
 }
 
-// Main CardList Component
+
 export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLoading, isFetchingNextPage, onEndReached }) => {
+  const parentRef = useRef<HTMLDivElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
+  
+  // Get responsive column count
+  const columns = useColumnCount();
+  
   // Memoize the click handler to prevent unnecessary re-renders
   const handleCardClick = useCallback((pokemon: BasicPokemon) => {
     onCardClick?.(pokemon);
   }, [onCardClick]);
+
+  const rowCount = Math.ceil(pokemons.length / columns);
+
+  // Setup virtualizer
+  const virtualizer = useVirtualizer({
+    count: rowCount,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => CARD_HEIGHT + GAP,
+    overscan: 3,
+  });
 
 
   useEffect(() => {
@@ -64,44 +83,74 @@ export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLo
 
   // Show empty state
   if (pokemons.length === 0) {
-    return (
-      <div className="bg-white rounded-3xl shadow-lg p-3 sm:p-4 md:p-6 mx-1 sm:mx-2 mb-0">
-        <div className="mx-auto text-center py-12">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">No Pokémons found</h3>
-        </div>
-      </div>
-    );
+    return <NotFound message="No Pokémons found" />;
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg p-3 sm:p-4 md:p-6 mx-1 sm:mx-2 mb-0">
-      <div className="mx-auto">
-        <div className="mb-4 text-sm text-gray-600">
+    <div className="bg-white rounded-3xl shadow-lg h-full flex flex-col mx-1 sm:mx-2 mb-0">
+      <div className="p-3 sm:p-4 md:p-6 flex flex-col h-full">
+        <div className="mb-4 text-sm text-gray-600 flex-shrink-0">
           Found <span className="font-semibold">{pokemons.length}</span> {pokemons.length === 1 ? 'pokémon' : 'pokémons'}
         </div>
         
         {/* Scrollable cards container */}
-        <div className="h-[calc(100vh-260px)] sm:h-[calc(100vh-260px)] md:h-[calc(100vh-265px)] lg:h-[calc(100vh-265px)] overflow-y-auto pr-2 -mr-2">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 p-1">
-            {pokemons.map((pokemon) => (
-              <Card 
-                key={pokemon.id} 
-                pokemon={pokemon} 
-                onClick={handleCardClick}
-              />
-            ))}
+        <div 
+          ref={parentRef}
+          className="flex-1 overflow-y-auto pr-2 -mr-2 relative"
+        >
+          <div
+            style={{
+              height: `${virtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {virtualizer.getVirtualItems().map((virtualRow) => {
+              const startIndex = virtualRow.index * columns;
+              const endIndex = Math.min(startIndex + columns, pokemons.length);
+              const rowPokemons = pokemons.slice(startIndex, endIndex);
+
+              return (
+                <div
+                  key={virtualRow.index}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 p-1">
+                    {rowPokemons.map((pokemon) => (
+                      <Card 
+                        key={pokemon.id} 
+                        pokemon={pokemon} 
+                        onClick={handleCardClick}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
           
-          {/* Loading spinner for infinite scroll */}
           {isFetchingNextPage && (
-            <div className="col-span-full flex justify-center py-4">
+            <div 
+              className="absolute w-full flex justify-center py-4 z-10"
+              style={{ top: `${virtualizer.getTotalSize()}px` }}
+            >
               <PokeballSpinner size="lg" />
             </div>
           )}
-          </div>
           
-          {/* Intersection Observer Target */}
-          <div ref={observerTarget} className="h-4 w-full bg-transparent" />
+          <div 
+            ref={observerTarget} 
+            className="absolute w-full h-4 bg-transparent"
+            style={{ top: `${virtualizer.getTotalSize() + (isFetchingNextPage ? 60 : 0)}px` }}
+          />
         </div>
       </div>
     </div>

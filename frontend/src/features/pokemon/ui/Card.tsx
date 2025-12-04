@@ -13,7 +13,7 @@ export const Card = React.memo<CardProps>(({ pokemon, onClick }) => {
 
   return (
     <div 
-      className="relative aspect-square bg-white rounded-2xl transition-all duration-200 hover:scale-105 cursor-pointer overflow-hidden"
+      className="relative aspect-square bg-white rounded-2xl transition-all duration-200 hover:scale-102 cursor-pointer overflow-hidden"
       style={{
         boxShadow: '2px 4px 6px 2px rgba(162, 160, 160, 0.3), 1px 1px 4px 2px rgba(162, 160, 160, 0.3)'
       }}

@@ -49,13 +49,23 @@ export function SearchBar({ searchQuery, onSearchChange, onFilterClick }: Search
                 type="text"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full pl-16 pr-4 py-3 rounded-4xl border-0 text-gray-900 placeholder-gray-500 focus:ring-4 focus:ring-white/30 focus:outline-none transition-all duration-200 text-lg"
+                className="w-full pl-16 pr-12 py-3 rounded-4xl border-0 text-gray-900 placeholder-gray-500 focus:ring-4 focus:ring-white/30 focus:outline-none transition-all duration-200 text-lg"
                 style={{
                   backgroundColor: '#FFFFFF',
                   boxShadow: '0px 1px 3px 1px #00000040 inset'
                 }}
                 placeholder="Search"
               />
+              {searchQuery && (
+                <button
+                  onClick={() => onSearchChange('')}
+                  className="absolute inset-y-0 right-5 flex items-center text-primary hover:text-primary/80 transition-colors"
+                >
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
 
             {/* Filter Button Component */}
