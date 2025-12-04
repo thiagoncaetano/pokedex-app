@@ -9,10 +9,11 @@ import { SessionEntity } from '@/features/auth';
 import { routes } from '@/routes';
 import { PokemonGateway } from '@/features/pokemon/gateway';
 import { usePokemonList } from '@/features/pokemon/hooks/usePokemonList';
+import { PokemonProvider, usePokemonContext } from '@/features/pokemon/context/PokemonContext';
 import type { User } from '@/shared/models/auth';
 
 interface HomePageProps {
-  pokemons: {
+  initialValues: {
     ids: number[];
     pagination: {
       page: number;
@@ -24,11 +25,32 @@ interface HomePageProps {
   user: User;
 }
 
-const HomePage: NextPage<HomePageProps> = ({ pokemons, user }) => {
+const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const { getBasicInfosByIds } = usePokemonList();
+  const { pokemons, addPokemons } = usePokemonContext();
+  const { getBasicInfosByIds, getInfinitePokemons } = usePokemonList();
 
-  const { data: pokemonsData, isLoading } = getBasicInfosByIds(pokemons.ids);
+  const { fetchNextPage, isFetchingNextPage } = getInfinitePokemons({ page: 2 });
+  const { data: pokemonWithBasicInfo, isLoading } = getBasicInfosByIds(initialValues.ids);
+
+  useEffect(() => {
+    if (pokemonWithBasicInfo) addPokemons(pokemonWithBasicInfo);
+  }, [pokemonWithBasicInfo, addPokemons]);
+
+  const handleScrollEnd = async () => {
+    if (!isFetchingNextPage) {
+      const result = await fetchNextPage();
+      if (result?.data?.pages) {
+        const lastPage = result.data.pages[result.data.pages.length - 1];
+        if (lastPage?.results) {
+          addPokemons(lastPage.results);
+        }
+      }
+    }
+  };
+
+
+  console.log("pokemons", pokemons)
   
   return (
     <>
@@ -47,9 +69,11 @@ const HomePage: NextPage<HomePageProps> = ({ pokemons, user }) => {
         />
 
         <CardList 
-          pokemons={pokemonsData || []} 
+          pokemons={pokemons} 
           onCardClick={(pokemon: BasicPokemon) => console.log('Clicked on:', pokemon)}
           isLoading={isLoading}
+          isFetchingNextPage={isFetchingNextPage}
+          onEndReached={handleScrollEnd}
         />
 
       </div>
@@ -66,7 +90,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (cont
 
     return {
       props: {
-        pokemons: {
+        initialValues: {
           ids: pokemons.results.map(pokemon => pokemon.id),
           pagination: pokemons.pagination,
         },

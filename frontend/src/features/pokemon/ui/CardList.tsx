@@ -1,20 +1,45 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Card } from './Card';
 import SkeletonCard from '@/shared/ui/SkeletonCard';
+import { PokeballSpinner } from '@/shared/ui/PokeballSpinner';
 import { BasicPokemon } from '@/features/pokemon/types/pokemon';
 
 interface CardListProps {
   pokemons: BasicPokemon[];
   onCardClick?: (pokemon: BasicPokemon) => void;
   isLoading?: boolean;
+  isFetchingNextPage?: boolean;
+  onEndReached?: () => void;
 }
 
 // Main CardList Component
-export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLoading }) => {
+export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLoading, isFetchingNextPage, onEndReached }) => {
+  const observerTarget = useRef<HTMLDivElement>(null);
   // Memoize the click handler to prevent unnecessary re-renders
   const handleCardClick = useCallback((pokemon: BasicPokemon) => {
     onCardClick?.(pokemon);
   }, [onCardClick]);
+
+
+  useEffect(() => {
+    const element = observerTarget.current;
+    if (isLoading || isFetchingNextPage || !element || !onEndReached) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          onEndReached();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      if (element) observer.unobserve(element);
+    };
+  }, [isLoading, isFetchingNextPage, onEndReached, pokemons]);
 
   // Show skeleton loading state
   if (isLoading) {
@@ -66,7 +91,17 @@ export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLo
                 onClick={handleCardClick}
               />
             ))}
+          
+          {/* Loading spinner for infinite scroll */}
+          {isFetchingNextPage && (
+            <div className="col-span-full flex justify-center py-4">
+              <PokeballSpinner size="lg" />
+            </div>
+          )}
           </div>
+          
+          {/* Intersection Observer Target */}
+          <div ref={observerTarget} className="h-4 w-full bg-transparent" />
         </div>
       </div>
     </div>

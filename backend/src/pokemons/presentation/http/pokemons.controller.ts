@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ListPokemonsUseCase, type ListPokemonsCommand } from '../../application/use-cases/ListPokemonsUseCase';
 import { GetPokemonDetailUseCase } from '../../application/use-cases/GetPokemonDetailUseCase';
 import { GetPokemonsBasicInfosUseCase } from '../../application/use-cases/GetPokemonsBasicInfosUseCase';
+import { GetPokemonsByInfiniteScrollUseCase } from '../../application/use-cases/GetPokemonsByInfiniteScrollUseCase';
 import { PokemonBasicInfoPresenter } from './pokemon.presenter';
 import type { PokemonDetail, PokemonBasicDetail,  PokemonListItem } from '../../domain/types';
 import { PaginateParams } from '../../../common/pagination';
@@ -23,7 +24,8 @@ export class PokemonsController {
   constructor(
     private readonly listPokemonsUseCase: ListPokemonsUseCase,
     private readonly getPokemonDetailUseCase: GetPokemonDetailUseCase,
-    private readonly getPokemonsBasicInfosUseCase: GetPokemonsBasicInfosUseCase
+    private readonly getPokemonsBasicInfosUseCase: GetPokemonsBasicInfosUseCase,
+    private readonly getPokemonsByInfiniteScrollUseCase: GetPokemonsByInfiniteScrollUseCase
   ) {}
 
   @Get("initial")
@@ -33,6 +35,17 @@ export class PokemonsController {
     };
 
     return this.listPokemonsUseCase.execute(command);
+  }
+
+  @Get()
+  async getPokemonsByInfinitScroll(@Query() query: any): Promise<any> {
+    const result = await this.getPokemonsByInfiniteScrollUseCase.execute({
+      pagination: new PaginateParams(query.page)
+    });
+    return {
+      pagination: result.pagination,
+      results: PokemonBasicInfoPresenter.presentBasicInfos(result.results)
+    };
   }
 
   @Get(':id')

@@ -56,5 +56,5 @@ export interface PokemonListResponse {
     totalPages: number;
     perPage: number;
   };
-  results: PokemonListItem[];
+  results: BasicPokemon[];
 }

@@ -35,9 +35,8 @@ export function usePokemonList() {
       },
       initialPageParam: 2,
       getNextPageParam: (lastPage: any) => {
-        return lastPage.pagination.page < lastPage.pagination.totalPages 
-          ? lastPage.pagination.page + 1 
-          : undefined;
+        const nextPage = lastPage.pagination.page + 1;
+        return nextPage <= lastPage.pagination.totalPages ? nextPage : undefined;
       },
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
