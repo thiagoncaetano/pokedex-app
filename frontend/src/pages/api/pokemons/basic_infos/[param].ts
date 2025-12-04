@@ -1,19 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { ApiRequestHandler, ApiError } from '../../../lib/ApiRequestHandler';
+import { ApiRequestHandler, ApiError } from '@/lib/ApiRequestHandler';
 import { authUtils } from '@/features/auth/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
     const tokens = authUtils.getTokens({ req, res });
-
     const data = await ApiRequestHandler({
-      method: 'POST',
-      path: 'pokemons/basic_infos',
-      body: req.body,
+      method: 'GET',
+      path: `pokemons/basic_infos/${req.query.param}`,
       token: tokens?.token,
     });
 
@@ -22,6 +20,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (err instanceof ApiError) {
       return res.status(err.status).json({ message: err.message });
     }
-    res.status(500).json({ message: (err as Error)?.message || 'Error fetching pokemon basic infos' });
+    res.status(500).json({ message: (err as Error)?.message || 'Error fetching pokemons' });
   }
 }

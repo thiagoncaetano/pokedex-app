@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { createPageTitle, pageDescriptions } from '@/shared/utils/pageTitles';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { TopBar } from '@/shared/ui/TopBar';
 import { SearchBar } from '@/shared/ui/SearchBar';
@@ -14,8 +16,8 @@ import { useFilters } from '@/hooks/useFilters';
 import type { User } from '@/shared/models/auth';
 
 interface HomePageProps {
-  initialValues: {
-    ids: number[];
+  initialPokemons: {
+    results: BasicPokemon[];
     pagination: {
       page: number;
       total: number;
@@ -26,29 +28,43 @@ interface HomePageProps {
   user: User;
 }
 
-const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
+const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
+  const router = useRouter();
   const { pokemons, addPokemons } = usePokemonContext();
-  const { getBasicInfosByIds, getInfinitePokemons } = usePokemonList();
+  const { getInfinitePokemons, getBasicInfosByParam } = usePokemonList();
   const { searchQuery, sortBy, debouncedSearchQuery, filterPokemons, setSearchQuery, setSortBy } = useFilters();
+
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const filtered = useMemo(() => {
     return filterPokemons(pokemons, debouncedSearchQuery);
   }, [pokemons, debouncedSearchQuery, sortBy, filterPokemons]);
-
+ 
   const { fetchNextPage, isFetchingNextPage } = getInfinitePokemons({ page: 2 });
 
-  const {
-    isFetching: isSearchApiFetching,
-    refetch: refetchSearch,
-  } = getInfinitePokemons(
-    { page: 1, query: debouncedSearchQuery || undefined },
-    { enabled: false }
-  );
-  const { data: pokemonWithBasicInfo, isLoading } = getBasicInfosByIds(initialValues.ids);
+  const { isFetching: isSearchApiFetching, refetch: refetchSearch } = getBasicInfosByParam(debouncedSearchQuery || '');
+
+  // Função para atualizar URL com IDs dos pokemons
+  const updateUrlWithIds = (pokemonIds: number[]) => {
+    const query = { ...router.query };
+    
+    if (pokemonIds.length > 0) {
+      query.ids = pokemonIds.map(String);
+    } else {
+      delete query.ids;
+    }
+    
+    router.push(
+      { pathname: router.pathname, query },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   useEffect(() => {
-    if (pokemonWithBasicInfo) addPokemons(pokemonWithBasicInfo);
-  }, [pokemonWithBasicInfo, addPokemons]);
+    addPokemons(initialPokemons.results || []);
+    setInitialLoading(false);
+  }, []);
 
   useEffect(() => {
     const search = async () => {
@@ -56,16 +72,17 @@ const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
         console.log('🔍 No local results, would call API');
         
         const result = await refetchSearch();
-        console.log('result dentro do effect', result.data);
-
-        const pages = result.data?.pages ?? [];
-        const apiResults = pages
-          .map((page: any) => page?.results)
-          .filter((r: any) => Array.isArray(r) && r.length > 0)
-          .flat();
-
-        if (apiResults.length > 0) {
-          addPokemons(apiResults);
+        console.log('result dentro do effect', result);
+        
+        if (result.data) {
+          addPokemons([result.data]);
+          // Adicionar ID novo aos existentes na URL
+          const existingIds = Array.isArray(router.query.ids) 
+            ? router.query.ids as string[]
+            : router.query.ids 
+              ? [router.query.ids as string]
+              : [];
+          updateUrlWithIds([...existingIds.map(Number), result.data.id]);
         }
       }
     };
@@ -87,13 +104,14 @@ const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
     }
   };
 
-  console.log("pokemons", pokemons)
-  
+  // console.log("pokemons", pokemons)
+  console.log("filtered", filtered)
+
   return (
     <>
       <PageHeader
-        title="Pokédex - Home"
-        description="Welcome back to Pokédex! Explore Pokémon, battles, and more."
+        title={createPageTitle('Home')}
+        description={pageDescriptions.home}
       />
       
       <div className="h-screen bg-primary flex flex-col overflow-hidden">
@@ -105,16 +123,14 @@ const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
           onSortChange={(sort) => setSortBy(sort)}
         />
 
-        <div className="flex-1 overflow-hidden px-1 sm:px-2 pb-2">
-          <CardList 
-            pokemons={filtered}
-            onCardClick={(pokemon: BasicPokemon) => console.log('Clicked on:', pokemon)}
-            isLoading={isLoading}
-            isFetchingNextPage={isFetchingNextPage}
-            isSearchApiFetching={isSearchApiFetching}
-            onEndReached={handleScrollEnd}
-          />
-        </div>
+        <CardList 
+          pokemons={filtered}
+          onCardClick={(pokemon: BasicPokemon) => console.log('Clicked on:', pokemon)}
+          isFetchingNextPage={isFetchingNextPage}
+          isSearchApiFetching={isSearchApiFetching}
+          onEndReached={handleScrollEnd}
+          isLoading={initialLoading}
+        />
       </div>
     </>
   );
@@ -124,15 +140,19 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (cont
   try {
     const session = await SessionEntity.get(context);
     if (!session) return { redirect: { destination: routes.login, permanent: false } };
+    
+    let ids: string[] = [];
+    if(context.query.ids) {
+      ids = Array.isArray(context.query.ids) 
+      ? context.query.ids 
+      : [context.query.ids];
+    }
 
-    const pokemons = await PokemonGateway.getPokemons(session.tokens.token);
+    const pokemons = await PokemonGateway.getPokemons(session.tokens.token, ids);
 
     return {
       props: {
-        initialValues: {
-          ids: pokemons.results.map(pokemon => pokemon.id),
-          pagination: pokemons.pagination,
-        },
+        initialPokemons: pokemons,
         user: { ...session.currentUser },
       },
     };

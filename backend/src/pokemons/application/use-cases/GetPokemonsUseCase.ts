@@ -2,32 +2,35 @@ import { Injectable } from '@nestjs/common';
 import { ListPokemonsUseCase } from './ListPokemonsUseCase';
 import { GetPokemonsBasicInfosUseCase } from './GetPokemonsBasicInfosUseCase';
 import { PaginateEntity, PaginateParams } from '../../../common/pagination';
-import type { PokemonBasicDetail } from '../../domain/types';
+import { PokemonBasicDetail } from '@/pokemons/domain/types';
 
-export interface GetPokemonsByInfiniteScrollCommand {
+export interface GetPokemonsCommand {
   pagination: PaginateParams;
+  ids?: number[];
 }
 
-export interface GetPokemonsByInfiniteScrollResult {
+export interface GetPokemonsResult {
   pagination: PaginateEntity;
   results: PokemonBasicDetail[];
 }
 
 @Injectable()
-export class GetPokemonsByInfiniteScrollUseCase {
+export class GetPokemonsUseCase {
   constructor(
     private readonly listPokemonsUseCase: ListPokemonsUseCase,
     private readonly getPokemonsBasicInfosUseCase: GetPokemonsBasicInfosUseCase
   ) {}
 
-  async execute(command: GetPokemonsByInfiniteScrollCommand): Promise<GetPokemonsByInfiniteScrollResult> {
+  async execute(command: GetPokemonsCommand): Promise<GetPokemonsResult> {
     const listResult = await this.listPokemonsUseCase.execute({
       pagination: command.pagination
     });
 
-    const ids = listResult.results.map(pokemon => pokemon.id);
+    const listIds = listResult.results.map(pokemon => pokemon.id);
+    
+    const allIds = [...new Set([...listIds, ...(command.ids || [])])];
 
-    const basicInfos = await this.getPokemonsBasicInfosUseCase.execute({ ids });
+    const basicInfos = await this.getPokemonsBasicInfosUseCase.execute({ ids: allIds });
 
     return {
       pagination: {
@@ -36,7 +39,11 @@ export class GetPokemonsByInfiniteScrollUseCase {
         perPage: listResult.pagination.perPage,
         totalPages: listResult.pagination.totalPages
       },
-      results: basicInfos
+      results: basicInfos.map(basicInfo => ({
+        id: basicInfo.id,
+        name: basicInfo.name,
+        image: basicInfo.sprites.front_default
+      }))
     };
   }
 }

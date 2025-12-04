@@ -2,21 +2,16 @@ import { Pokemon, BasicPokemon, PokemonFilters, PokemonListResponse } from '../t
 import { routes } from '@/routes';
 
 export class PokemonAdapter {
-  async getBasicInfosByIds(ids: number[]): Promise<BasicPokemon[]> {
-    const response = await fetch(routes.api.pokemons.basic_infos, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ids }),
-    });
+  async getBasicInfosByParam(name: string): Promise<BasicPokemon | null> {
+    const response = await fetch(routes.api.pokemons.getByParam(name));
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || 'Failed to fetch pokemon basic infos');
+      throw new Error(error.message || 'Failed to fetch pokemon by name');
     }
 
-    return response.json();
+    const data = await response.json();
+    return data;
   }
 
   async getDetailById(id: number): Promise<Pokemon> {

@@ -1,33 +1,32 @@
 import { useState, Suspense, lazy } from 'react';
 import { FilterButton } from './FilterButton';
 import { PokeballSpinner } from './PokeballSpinner';
+import { SortBy, SortByType } from '@/types/filters';
 const SortModal = lazy(() => import('./SortModal'));
 
 interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onSortChange: (sort: 'number' | 'name') => void;
+  onSortChange: (sort: SortByType) => void;
 }
 
 export function SearchBar({ searchQuery, onSearchChange, onSortChange }: SearchBarProps) {
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState<string | null>(null);
+  const [selectedSort, setSelectedSort] = useState<SortByType>(SortBy.NUMBER);
 
   // Sort options
   const sortOptions = [
-    { value: 'number', label: 'Number' },
-    { value: 'name', label: 'Name' }
+    { value: SortBy.NUMBER, label: 'Number' },
+    { value: SortBy.NAME, label: 'Name' }
   ];
 
   const handleFilterClick = () => {
     setIsSortModalOpen(true);
   };
 
-  const handleSortChange = (value: string) => {
-    if (value === 'number' || value === 'name') {
-      setSelectedSort(value);
-      onSortChange(value);
-    }
+  const handleSortChange = (value: SortByType) => {
+    setSelectedSort(value);
+    onSortChange(value);
   };
 
   const handleSortModalClose = () => {
@@ -87,7 +86,7 @@ export function SearchBar({ searchQuery, onSearchChange, onSortChange }: SearchB
             onClose={handleSortModalClose}
             title="Sort by"
             options={sortOptions}
-            selectedValue={selectedSort || ''}
+            selectedValue={selectedSort}
             onSelectChange={handleSortChange}
           />
         </Suspense>

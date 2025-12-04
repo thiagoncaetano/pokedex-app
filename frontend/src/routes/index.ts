@@ -10,6 +10,7 @@ export const routes = {
     pokemons: {
       basic_infos: '/api/pokemons/basic_infos',
       list: '/api/pokemons/list',
+      getByParam: (param: string) => `/api/pokemons/basic_infos/${param}`,
       detail: (id: number) => `/api/pokemons/${id}`,
     },
   },

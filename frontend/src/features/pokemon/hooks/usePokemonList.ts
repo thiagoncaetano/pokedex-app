@@ -5,15 +5,6 @@ import { PokemonFilters } from '../types/pokemon';
 const adapter = new PokemonAdapter();
 
 export function usePokemonList() {
-  const getBasicInfosByIds = (ids: number[]) => {
-    return useQuery({
-      queryKey: ['pokemon-basic-infos', ids],
-      queryFn: () => adapter.getBasicInfosByIds(ids),
-      enabled: ids.length > 0,
-      staleTime: 10 * 60 * 1000, // 10 minutes
-    });
-  };
-
   const getDetailById = (id: number) => {
     return useQuery({
       queryKey: ['pokemon-detail', id],
@@ -23,7 +14,17 @@ export function usePokemonList() {
     });
   };
 
-  const getInfinitePokemons = (filters: PokemonFilters, options?: { enabled?: boolean }) => {
+  const getBasicInfosByParam = (param: string) => {
+    return useQuery({
+      queryKey: ['pokemon-by-param', param],
+      queryFn: () => adapter.getBasicInfosByParam(param),
+      enabled: !!param,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: false,
+    });
+  };
+
+  const getInfinitePokemons = (filters: PokemonFilters) => {
     return useInfiniteQuery({
       queryKey: ['pokemon-infinite', filters],
       queryFn: async ({ pageParam }: { pageParam: number }) => {
@@ -38,14 +39,15 @@ export function usePokemonList() {
         const nextPage = lastPage.pagination.page + 1;
         return nextPage <= lastPage.pagination.totalPages ? nextPage : undefined;
       },
-      enabled: options?.enabled ?? true,
+      enabled: false,
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
   };
 
   return {
-    getBasicInfosByIds,
+    // getBasicInfosByIds,
     getDetailById,
+    getBasicInfosByParam,
     getInfinitePokemons,
   };
 }

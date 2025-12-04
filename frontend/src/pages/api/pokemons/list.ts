@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const tokens = authUtils.getTokens({ req, res });
     const data = await ApiRequestHandler({
-      method: 'GET',
+      method: 'POST',
       path: `pokemons?${new URLSearchParams(req.query as any).toString()}`,
       token: tokens?.token,
     });

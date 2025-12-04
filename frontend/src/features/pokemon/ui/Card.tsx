@@ -1,4 +1,5 @@
 import React from 'react';
+import { AppImage } from '@/shared/ui/AppImage';
 import { BasicPokemon } from '@/features/pokemon/types/pokemon';
 
 interface CardProps {
@@ -26,9 +27,11 @@ export const Card = React.memo<CardProps>(({ pokemon, onClick }) => {
 
       {/* Pokemon Image */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
-        <img 
-          src={pokemon.image} 
+        <AppImage
+          src={pokemon.image}
           alt={pokemon.name}
+          width={160}
+          height={160}
           className="w-[60%] h-[60%] sm:w-[70%] sm:h-[70%] md:w-[75%] md:h-[75%] object-contain"
           loading="lazy"
         />

@@ -13,14 +13,8 @@ export interface PokemonGateway {
       url: string;
     }>;
   }>;
-  
-  getPokemonBasicInfo(id: number): Promise<{
-    id: number;
-    name: string;
-    image: string;
-  } | null>;
 
-  getPokemonDetail(id: number): Promise<{
+  getPokemonDetail(param: number|string): Promise<{
     id: number;
     name: string;
     height: number;

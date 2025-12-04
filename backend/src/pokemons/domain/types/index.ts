@@ -83,3 +83,13 @@ export interface GetPokemonsBasicInfosCommand {
 export interface GetPokemonsCommand {
   filters: PokemonFilters;
 }
+
+export interface GetPokemonsResult {
+  pagination: {
+    page: number;
+    count: number;
+    perPage: number;
+    totalPages: number;
+  };
+  results: PokemonBasicDetail[];
+}

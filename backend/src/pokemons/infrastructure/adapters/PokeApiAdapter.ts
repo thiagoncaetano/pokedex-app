@@ -46,30 +46,7 @@ export class PokeApiAdapter implements PokemonGateway {
     };
   }
 
-  async getPokemonBasicInfo(id: number): Promise<{
-    id: number;
-    name: string;
-    image: string
-  } | null> {
-    const response = await fetch(`${this.baseUrl}/pokemon/${id}`);
-    
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error(`Failed to fetch pokemon detail: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    return {
-      id: data.id,
-      name: data.name,
-      image: data.sprites.front_default
-    };
-  }
-
-  async getPokemonDetail(id: number): Promise<{
+  async getPokemonDetail(param: number|string): Promise<{
     id: number;
     name: string;
     height: number;
@@ -83,7 +60,7 @@ export class PokeApiAdapter implements PokemonGateway {
       back_shiny: string;
     };
   } | null> {
-    const response = await fetch(`${this.baseUrl}/pokemon/${id}`);
+    const response = await fetch(`${this.baseUrl}/pokemon/${param}`);
     
     if (!response.ok) {
       if (response.status === 404) {

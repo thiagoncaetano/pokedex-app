@@ -6,10 +6,10 @@ import { LoginUseCase } from './application/use-cases/LoginUseCase';
 import { AuthDomainService } from './domain/services/AuthDomainService';
 import { JwtDomainService } from './domain/services/JwtService';
 import { JwtStrategy } from './infrastructure/strategies/JwtStrategy';
-import { TypeOrmSessionRepositoryProvider } from './infra/repositories/TypeOrmSessionRepository';
-import { SessionEntity } from './infra/entities/session.entity';
-import { TypeOrmUserRepositoryProvider } from '../users/infra/repositories/TypeOrmUserRepository';
-import { UserEntity } from '../users/infra/entities/user.entity';
+import { TypeOrmSessionRepositoryProvider } from './infrastructure/repositories/TypeOrmSessionRepository';
+import { SessionEntity } from './infrastructure/entities/session.entity';
+import { UserEntity } from '@/users/infrastructure/entities/user.entity';
+import { TypeOrmUserRepositoryProvider } from '@/users/infrastructure/repositories/TypeOrmUserRepository';
 
 @Module({
   imports: [

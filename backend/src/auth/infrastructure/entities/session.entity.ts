@@ -1,5 +1,5 @@
+import { UserEntity } from '@/users/infrastructure/entities/user.entity';
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, Index } from 'typeorm';
-import { UserEntity } from '../../../users/infra/entities/user.entity';
 
 @Entity('sessions')
 @Index(['userId'])

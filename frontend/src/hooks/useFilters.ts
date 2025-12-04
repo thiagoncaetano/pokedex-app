@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { BasicPokemon } from '@/features/pokemon/types/pokemon';
+import { SortBy, SortByType } from '@/types/filters';
 
 interface FiltersState {
   searchQuery: string;
-  sortBy: 'number' | 'name';
+  sortBy: SortByType;
 }
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -25,14 +26,14 @@ function useDebounce<T>(value: T, delay: number): T {
 export function useFilters() {
   const [filters, setFilters] = useState<FiltersState>({
     searchQuery: '',
-    sortBy: 'number'
+    sortBy: SortBy.NUMBER
   });
 
   const setSearchQuery = (query: string) => {
     setFilters(prev => ({ ...prev, searchQuery: query }));
   };
 
-  const setSortBy = (sortBy: 'number' | 'name') => {
+  const setSortBy = (sortBy: SortByType) => {
     setFilters(prev => ({ ...prev, sortBy }));
   };
 
@@ -64,10 +65,10 @@ export function useFilters() {
 
     // Sort results according to current sortBy
     const sorted = [...result].sort((a, b) => {
-      if (filters.sortBy === 'name') {
+      if (filters.sortBy === SortBy.NAME) {
         return a.name.localeCompare(b.name);
       }
-      // 'number' sort: use id as numeric order
+      // NUMBER sort: use id as numeric order
       return a.id - b.id;
     });
 

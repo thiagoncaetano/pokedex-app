@@ -6,7 +6,7 @@ import type { SessionRepository } from '../../domain/repositories/ISessionReposi
 import { SESSION_REPOSITORY_TOKEN } from '../../domain/repositories/ISessionRepository';
 import { AuthDomainService } from '../../domain/services/AuthDomainService';
 import { JwtDomainService } from '../../domain/services/JwtService';
-import { SessionEntity } from '../../infra/entities/session.entity';
+import { SessionEntity } from '../../infrastructure/entities/session.entity';
 import { User } from '../../../users/domain/entities/User';
 import { LoginDto } from '../dto/LoginDto';
 import { UnauthorizedError } from '../../../common/errors/HTTPError';
