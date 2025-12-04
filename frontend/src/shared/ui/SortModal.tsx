@@ -16,7 +16,6 @@ interface SortModalProps {
 
 export default function SortModal({ isOpen, onClose, title, options, selectedValue, onSelectChange }: SortModalProps) {
   const [isClosing, setIsClosing] = useState(false);
-  console.log('SortModal render - selectedValue:', selectedValue);
   
   const handleOptionClick = (value: string) => {
     console.log('Clicked on:', options.find(opt => opt.value === value)?.label);

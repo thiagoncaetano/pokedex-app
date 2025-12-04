@@ -6,10 +6,10 @@ const SortModal = lazy(() => import('./SortModal'));
 interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onFilterClick: () => void;
+  onSortChange: (sort: 'number' | 'name') => void;
 }
 
-export function SearchBar({ searchQuery, onSearchChange, onFilterClick }: SearchBarProps) {
+export function SearchBar({ searchQuery, onSearchChange, onSortChange }: SearchBarProps) {
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState<string | null>(null);
 
@@ -24,13 +24,14 @@ export function SearchBar({ searchQuery, onSearchChange, onFilterClick }: Search
   };
 
   const handleSortChange = (value: string) => {
-    console.log('handleSortChange chamado com:', value);
-    setSelectedSort(value);
+    if (value === 'number' || value === 'name') {
+      setSelectedSort(value);
+      onSortChange(value);
+    }
   };
 
   const handleSortModalClose = () => {
     setIsSortModalOpen(false);
-    onFilterClick();
   };
 
   return (

@@ -4,6 +4,7 @@ import { Card } from './Card';
 import SkeletonCard from '@/shared/ui/SkeletonCard';
 import { PokeballSpinner } from '@/shared/ui/PokeballSpinner';
 import { NotFound } from '@/shared/ui/NotFound';
+import { ScrollContainer } from '@/shared/ui/ScrollContainer';
 import { BasicPokemon } from '@/features/pokemon/types/pokemon';
 import { useColumnCount } from '@/hooks/useColumnCount';
 import { CARD_HEIGHT, GAP } from '@/shared/constants/virtualization';
@@ -13,15 +14,15 @@ interface CardListProps {
   onCardClick?: (pokemon: BasicPokemon) => void;
   isLoading?: boolean;
   isFetchingNextPage?: boolean;
+  isSearchApiFetching?: boolean;
   onEndReached?: () => void;
 }
 
 
-export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLoading, isFetchingNextPage, onEndReached }) => {
+export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLoading, isFetchingNextPage, isSearchApiFetching, onEndReached }) => {
   const parentRef = useRef<HTMLDivElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
   
-  // Get responsive column count
   const columns = useColumnCount();
   
   // Memoize the click handler to prevent unnecessary re-renders
@@ -81,11 +82,6 @@ export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLo
     );
   }
 
-  // Show empty state
-  if (pokemons.length === 0) {
-    return <NotFound message="No Pokémons found" />;
-  }
-
   return (
     <div className="bg-white rounded-3xl shadow-lg h-full flex flex-col mx-1 sm:mx-2 mb-0">
       <div className="p-3 sm:p-4 md:p-6 flex flex-col h-full">
@@ -94,21 +90,26 @@ export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLo
         </div>
         
         {/* Scrollable cards container */}
-        <div 
-          ref={parentRef}
-          className="flex-1 overflow-y-auto pr-2 -mr-2 relative"
-        >
-          <div
-            style={{
-              height: `${virtualizer.getTotalSize()}px`,
-              width: '100%',
-              position: 'relative',
-            }}
-          >
-            {virtualizer.getVirtualItems().map((virtualRow) => {
-              const startIndex = virtualRow.index * columns;
-              const endIndex = Math.min(startIndex + columns, pokemons.length);
-              const rowPokemons = pokemons.slice(startIndex, endIndex);
+        <ScrollContainer ref={parentRef}>
+          { !!isSearchApiFetching ? (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <PokeballSpinner size="lg" />
+            </div>
+          ) : pokemons.length === 0 ? (
+            <NotFound message="Nothing found" />
+          ) : (
+            <>
+              <div
+                style={{
+                  height: `${virtualizer.getTotalSize()}px`,
+                  width: '100%',
+                  position: 'relative',
+                }}
+              >
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const startIndex = virtualRow.index * columns;
+                const endIndex = Math.min(startIndex + columns, pokemons.length);
+                const rowPokemons = pokemons.slice(startIndex, endIndex);
 
               return (
                 <div
@@ -145,13 +146,15 @@ export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLo
               <PokeballSpinner size="lg" />
             </div>
           )}
+            </>
+          )}
           
           <div 
             ref={observerTarget} 
             className="absolute w-full h-4 bg-transparent"
             style={{ top: `${virtualizer.getTotalSize() + (isFetchingNextPage ? 60 : 0)}px` }}
           />
-        </div>
+        </ScrollContainer>
       </div>
     </div>
   );

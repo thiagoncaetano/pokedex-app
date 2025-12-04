@@ -23,7 +23,7 @@ export function usePokemonList() {
     });
   };
 
-  const getInfinitePokemons = (filters: PokemonFilters) => {
+  const getInfinitePokemons = (filters: PokemonFilters, options?: { enabled?: boolean }) => {
     return useInfiniteQuery({
       queryKey: ['pokemon-infinite', filters],
       queryFn: async ({ pageParam }: { pageParam: number }) => {
@@ -38,6 +38,7 @@ export function usePokemonList() {
         const nextPage = lastPage.pagination.page + 1;
         return nextPage <= lastPage.pagination.totalPages ? nextPage : undefined;
       },
+      enabled: options?.enabled ?? true,
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
   };

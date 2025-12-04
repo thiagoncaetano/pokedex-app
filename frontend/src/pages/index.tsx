@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { TopBar } from '@/shared/ui/TopBar';
@@ -9,7 +9,8 @@ import { SessionEntity } from '@/features/auth';
 import { routes } from '@/routes';
 import { PokemonGateway } from '@/features/pokemon/gateway';
 import { usePokemonList } from '@/features/pokemon/hooks/usePokemonList';
-import { PokemonProvider, usePokemonContext } from '@/features/pokemon/context/PokemonContext';
+import { usePokemonContext } from '@/features/pokemon/context/PokemonContext';
+import { useFilters } from '@/hooks/useFilters';
 import type { User } from '@/shared/models/auth';
 
 interface HomePageProps {
@@ -26,18 +27,55 @@ interface HomePageProps {
 }
 
 const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
-  const [searchQuery, setSearchQuery] = useState('');
   const { pokemons, addPokemons } = usePokemonContext();
   const { getBasicInfosByIds, getInfinitePokemons } = usePokemonList();
+  const { searchQuery, sortBy, debouncedSearchQuery, filterPokemons, setSearchQuery, setSortBy } = useFilters();
+
+  const filtered = useMemo(() => {
+    return filterPokemons(pokemons, debouncedSearchQuery);
+  }, [pokemons, debouncedSearchQuery, sortBy, filterPokemons]);
 
   const { fetchNextPage, isFetchingNextPage } = getInfinitePokemons({ page: 2 });
+
+  const {
+    isFetching: isSearchApiFetching,
+    refetch: refetchSearch,
+  } = getInfinitePokemons(
+    { page: 1, query: debouncedSearchQuery || undefined },
+    { enabled: false }
+  );
   const { data: pokemonWithBasicInfo, isLoading } = getBasicInfosByIds(initialValues.ids);
 
   useEffect(() => {
     if (pokemonWithBasicInfo) addPokemons(pokemonWithBasicInfo);
   }, [pokemonWithBasicInfo, addPokemons]);
 
+  useEffect(() => {
+    const search = async () => {
+      if (debouncedSearchQuery.trim() && filtered.length === 0) {
+        console.log('🔍 No local results, would call API');
+        
+        const result = await refetchSearch();
+        console.log('result dentro do effect', result.data);
+
+        const pages = result.data?.pages ?? [];
+        const apiResults = pages
+          .map((page: any) => page?.results)
+          .filter((r: any) => Array.isArray(r) && r.length > 0)
+          .flat();
+
+        if (apiResults.length > 0) {
+          addPokemons(apiResults);
+        }
+      }
+    };
+
+    search();
+  }, [debouncedSearchQuery, filtered.length, refetchSearch, addPokemons]);
+
   const handleScrollEnd = async () => {
+    if (debouncedSearchQuery.trim()) return;
+    
     if (!isFetchingNextPage) {
       const result = await fetchNextPage();
       if (result?.data?.pages) {
@@ -64,19 +102,19 @@ const HomePage: NextPage<HomePageProps> = ({ initialValues, user }) => {
         <SearchBar
           searchQuery={searchQuery}
           onSearchChange={(query) => setSearchQuery(query)}
-          onFilterClick={() => console.log('Filter clicked')}
+          onSortChange={(sort) => setSortBy(sort)}
         />
 
         <div className="flex-1 overflow-hidden px-1 sm:px-2 pb-2">
           <CardList 
-            pokemons={pokemons} 
+            pokemons={filtered}
             onCardClick={(pokemon: BasicPokemon) => console.log('Clicked on:', pokemon)}
             isLoading={isLoading}
             isFetchingNextPage={isFetchingNextPage}
+            isSearchApiFetching={isSearchApiFetching}
             onEndReached={handleScrollEnd}
           />
         </div>
-
       </div>
     </>
   );

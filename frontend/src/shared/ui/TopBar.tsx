@@ -19,29 +19,40 @@ export function TopBar({ user }: TopBarProps) {
   };
   return (
     <div className="w-full bg-primary px-4 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center space-x-6">
-          <div className="relative w-10 h-10">
-            <Image 
-              src="/Pokeball.png" 
-              alt="Pokéball" 
-              width={96} 
-              height={96}
-              className="w-full h-full transform transition-transform duration-500 hover:rotate-180"
-              priority
-              quality={100}
-              unoptimized
-            />
+      <div className="flex items-center justify-between flex-wrap gap-y-2">
+        <div className="flex flex-col">
+          <div className="flex items-center space-x-6">
+            <div className="relative w-10 h-10">
+              <Image 
+                src="/Pokeball.png" 
+                alt="Pokéball" 
+                width={96} 
+                height={96}
+                className="w-full h-full transform transition-transform duration-500 hover:rotate-180"
+                priority
+                quality={100}
+                unoptimized
+              />
+            </div>
+            <h1 className="text-4xl font-extrabold text-white">
+              Pokédex
+            </h1>
           </div>
-          <h1 className="text-4xl font-extrabold text-white">
-            Pokédex
-          </h1>
+
+          {user && (
+            <span className="text-white text-sm mt-2 hidden max-[450px]:block">
+              Welcome, {user.username}
+            </span>
+          )}
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-end gap-3 flex-wrap">
           {user && (
-            <span className="text-white text-sm">Welcome, {user.username}</span>
+            <span className="text-white text-sm inline max-[450px]:hidden">
+              Welcome, {user.username}
+            </span>
           )}
+
           <button
             onClick={handleLogout}
             className="bg-white/20 backdrop-blur-sm text-white p-3 rounded-xl hover:bg-white/30 transition-all duration-200 group cursor-pointer"
