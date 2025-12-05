@@ -1,14 +1,3 @@
-export interface Pokemon {
-  id: number;
-  name: string;
-  number: number;
-  types: string[];
-  imageUrl: string;
-  height?: number;
-  weight?: number;
-  abilities?: string[];
-}
-
 export interface BasicPokemon {
   id: number;
   name: string;
@@ -36,17 +25,28 @@ export interface PokemonListItem {
   url: string;
 }
 
-export interface PokemonWithDetails extends PokemonListItem {
-  details?: {
-    height: number;
-    weight: number;
-    types: Array<{ type: { name: string } }>;
-    abilities: Array<{ ability: { name: string } }>;
-    sprites: {
-      front_default: string;
-    };
+export interface PokemonDetails {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  moves: string[],
+  stats: PokemonStat[],
+  types: string[];
+  abilities: PokemonAbility[];
+  main_image: string;
+  images: string[];
+}
+
+export interface PokemonStat {
+  name: string;
+  base_stat: number;
+}
+
+export interface PokemonAbility {
+  ability: {
+    name: string;
   };
-  loading?: boolean;
 }
 
 export interface PokemonListResponse {

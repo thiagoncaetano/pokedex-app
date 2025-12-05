@@ -1,4 +1,4 @@
-import type { Pokemon, PokemonDetail, PokemonBasicDetail } from '../../domain/types';
+import type { PokemonDetail, PokemonBasicDetail } from '../../domain/types';
 
 export class PokemonPresenter {
   static presentDetail(detail: PokemonDetail | null, id: number): PokemonDetail {

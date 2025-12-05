@@ -22,7 +22,12 @@ export function TopBar({ user }: TopBarProps) {
       <div className="flex items-center justify-between flex-wrap gap-y-2">
         <div className="flex flex-col">
           <div className="flex items-center space-x-6">
-            <div className="relative w-10 h-10">
+            <button
+              type="button"
+              onClick={() => router.reload()}
+              className="relative w-10 h-10 focus:outline-none cursor-pointer"
+              aria-label="Go to home"
+            >
               <AppImage 
                 src="/Pokeball.png" 
                 alt="Pokéball" 
@@ -30,7 +35,7 @@ export function TopBar({ user }: TopBarProps) {
                 height={96}
                 className="w-full h-full transform transition-transform duration-500 hover:rotate-180"
               />
-            </div>
+            </button>
             <h1 className="text-4xl font-extrabold text-white">
               Pokédex
             </h1>

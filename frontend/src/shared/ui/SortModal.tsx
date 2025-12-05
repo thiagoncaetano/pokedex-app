@@ -24,7 +24,6 @@ export default function SortModal({ isOpen, onClose, title, options, selectedVal
   };
 
   const handleOptionClick = (value: SortByType) => {
-    console.log('Clicked on:', options.find(opt => opt.value === value)?.label);
     setIsClosing(true);
     onSelectChange(value);
     

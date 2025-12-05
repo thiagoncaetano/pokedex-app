@@ -66,6 +66,10 @@ export class PokeApiAdapter implements PokemonGateway {
       base_stat: s.base_stat,
     }));
 
+    const types: string[] = (data.types ?? [])
+      .map((t: any) => t.type?.name)
+      .filter(Boolean);
+
     const images: PokemonImages[] = [];
 
     const collectSpriteUrls = (obj: any) => {
@@ -94,7 +98,7 @@ export class PokeApiAdapter implements PokemonGateway {
       name: data.name,
       height: data.height,
       weight: data.weight,
-      types: data.types,
+      types,
       moves,
       stats,
       abilities: data.abilities,

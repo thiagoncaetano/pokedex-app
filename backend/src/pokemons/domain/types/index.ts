@@ -11,50 +11,16 @@ export interface PokemonDetail {
   weight: number;
   moves: PokemonMove[],
   stats: PokemonStat[],
-  types: PokemonType[];
+  types: string[];
   abilities: PokemonAbility[];
   main_image: string;
   images: PokemonImages[];
-}
-
-export interface Pokemon {
-  id: number;
-  name: string;
-  number: number;
-  types: string[];
-  imageUrl: string;
-  height?: number;
-  weight?: number;
-  abilities?: string[];
-}
-
-export interface PokemonType {
-  type: {
-    name: string;
-  };
 }
 
 export interface PokemonAbility {
   ability: {
     name: string;
   };
-}
-
-export interface PokemonSprites {
-  front_default: string;
-  front_shiny: string;
-  back_default: string;
-  back_shiny: string;
-}
-
-export interface PokemonListResponse {
-  pagination: {
-    page: number;
-    total: number;
-    totalPages: number;
-    perPage: number;
-  };
-  results: PokemonListItem[];
 }
 
 export interface PokemonListItem {

@@ -55,8 +55,8 @@ export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLo
     },
   );
 
-  // Show skeleton loading state
-  if (isLoading || !!isSearchApiFetching) {
+  // Show skeleton only on initial load (no pokemons yet)
+  if ((isLoading || !!isSearchApiFetching) && pokemons.length === 0) {
     return <SkeletonGrid />;
   }
 

@@ -97,11 +97,8 @@ const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
   useEffect(() => {
     const search = async () => {
       if (debouncedSearchQuery.trim() && filtered.length === 0) {
-        console.log('🔍 No local results, would call API');
-        
         const result = await refetchSearch();
-        console.log('result dentro do effect', result);
-        
+
         if (result.data) {
           const pokemon = result.data as BasicPokemon;
           setExtraPokemons(prev => {
