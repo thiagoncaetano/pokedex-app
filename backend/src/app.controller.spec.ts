@@ -15,8 +15,9 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return API alive message', () => {
+      const result = appController.getHello();
+      expect(result.startsWith('API Alive:')).toBe(true);
     });
   });
 });
