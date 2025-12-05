@@ -105,7 +105,6 @@ const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
             const exists = prev.some(p => p.id === pokemon.id);
             return exists ? prev : [...prev, pokemon];
           });
-          // Adicionar ID novo aos existentes na URL
           const existingIds = Array.isArray(router.query.ids) 
             ? router.query.ids as string[]
             : router.query.ids 
