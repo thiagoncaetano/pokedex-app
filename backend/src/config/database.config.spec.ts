@@ -29,9 +29,8 @@ describe('database.config', () => {
 
       expect(config.type).toBe('sqlite');
       expect(config.database).toBe('/tmp/test.db');
-      // em test, synchronize ainda deve ser true (nao eh production)
+
       expect(config.synchronize).toBe(true);
-      // logging apenas em development
       expect(config.logging).toBe(false);
     });
   });

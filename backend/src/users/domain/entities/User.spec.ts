@@ -9,7 +9,6 @@ describe('User entity', () => {
       expect(user.username).toBe('ash');
       expect(typeof user.passwordHash).toBe('string');
       expect(user.passwordHash.length).toBeGreaterThan(0);
-      // nao deve armazenar a senha em texto puro
       expect(user.passwordHash).not.toBe('pikachu123');
     });
   });

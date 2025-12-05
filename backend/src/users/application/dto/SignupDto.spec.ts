@@ -26,7 +26,7 @@ describe('SignupDto', () => {
 
   it('should be invalid when username has invalid characters', async () => {
     const dto = new SignupDto();
-    dto.username = 'ash!'; // ! não é permitido pelo regex
+    dto.username = 'ash!';
     dto.password = 'pikachu123';
 
     const errors = await validate(dto);

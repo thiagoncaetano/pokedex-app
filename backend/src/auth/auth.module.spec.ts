@@ -17,7 +17,6 @@ describe('AuthModule', () => {
 
   it('should import TypeOrmModule and PassportModule', () => {
     const imports = Reflect.getMetadata('imports', AuthModule) || [];
-    // verifica que existem modulos dinamicos de TypeOrm e Passport
     expect(imports.some((m: any) => m && m.module === TypeOrmModule)).toBe(true);
     expect(imports.some((m: any) => m && m.module === PassportModule)).toBe(true);
   });

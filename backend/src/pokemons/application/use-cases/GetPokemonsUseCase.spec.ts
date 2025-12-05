@@ -70,7 +70,6 @@ describe('GetPokemonsUseCase', () => {
 
     const result: GetPokemonsResult = await useCase.execute(command);
 
-    // ids vindos da lista + ids extras, sem duplicados
     expect(getBasicsUseCase.execute).toHaveBeenCalledTimes(1);
     const args = getBasicsUseCase.execute.mock.calls[0][0];
     expect(args.ids.sort()).toEqual([1, 2, 3, 4]);

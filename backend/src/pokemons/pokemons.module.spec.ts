@@ -32,7 +32,6 @@ describe('PokemonsModule', () => {
       ]),
     );
 
-    // provider registrado com token POKEMON_GATEWAY_TOKEN
     expect(
       providers,
     ).toEqual(
