@@ -11,7 +11,7 @@ import { PokemonGateway } from '@/features/pokemon/gateway';
 
 const PokemonDetailPage: NextPage = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, ...restQuery } = router.query;
 
   const { data: pokemon } = useQuery<any>({
     queryKey: ['pokemon-detail', id],
@@ -37,7 +37,7 @@ const PokemonDetailPage: NextPage = () => {
           name={pokemon.name}
           id={pokemon.id}
           onBack={() => {
-            router.push(routes.home);
+            router.push({ pathname: routes.home, query: restQuery });
           }}
         />
       )}

@@ -145,7 +145,10 @@ const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
         <CardList 
           pokemons={filtered}
           onCardClick={(pokemon: BasicPokemon) => {
-            router.push(pokemon_details_path(pokemon.id));
+            router.push({
+              pathname: pokemon_details_path(pokemon.id),
+              query: router.query,
+            });
           }}
           isFetchingNextPage={isFetchingNextPage}
           isSearchApiFetching={isSearchApiFetching}
