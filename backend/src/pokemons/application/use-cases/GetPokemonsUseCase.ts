@@ -42,7 +42,7 @@ export class GetPokemonsUseCase {
       results: basicInfos.map(basicInfo => ({
         id: basicInfo.id,
         name: basicInfo.name,
-        image: basicInfo.sprites.front_default
+        image: basicInfo.main_image
       }))
     };
   }

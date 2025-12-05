@@ -15,3 +15,5 @@ export const routes = {
     },
   },
 } as const;
+
+export const pokemon_details_path = (id: number) => `/pokemon/${id}`;

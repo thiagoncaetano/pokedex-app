@@ -22,7 +22,7 @@ export class PokemonGateway {
     return response.json();
   }
 
-  static async getPokemonDetails(id: number, token: string): Promise<any> {
+  static async getPokemonDetails(id: string, token: string): Promise<any> {
     const response = await fetch(`${API_URL}/pokemons/${id}`, {
       headers: {
         'Accept': 'application/json',

@@ -6,9 +6,9 @@ import { PageHeader } from '@/shared/ui/PageHeader';
 import { TopBar } from '@/shared/ui/TopBar';
 import { SearchBar } from '@/shared/ui/SearchBar';
 import { CardList } from '@/features/pokemon/ui/CardList';
-import { PokemonFilters, BasicPokemon } from '@/features/pokemon/types/pokemon';
+import { BasicPokemon } from '@/features/pokemon/types/pokemon';
 import { SessionEntity } from '@/features/auth';
-import { routes } from '@/routes';
+import { routes, pokemon_details_path } from '@/routes';
 import { PokemonGateway } from '@/features/pokemon/gateway';
 import { usePokemonList } from '@/features/pokemon/hooks/usePokemonList';
 import { usePokemonContext } from '@/features/pokemon/context/PokemonContext';
@@ -125,7 +125,9 @@ const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
 
         <CardList 
           pokemons={filtered}
-          onCardClick={(pokemon: BasicPokemon) => console.log('Clicked on:', pokemon)}
+          onCardClick={(pokemon: BasicPokemon) => {
+            router.push(pokemon_details_path(pokemon.id));
+          }}
           isFetchingNextPage={isFetchingNextPage}
           isSearchApiFetching={isSearchApiFetching}
           onEndReached={handleScrollEnd}

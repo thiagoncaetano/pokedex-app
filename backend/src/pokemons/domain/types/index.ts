@@ -9,14 +9,12 @@ export interface PokemonDetail {
   name: string;
   height: number;
   weight: number;
+  moves: PokemonMove[],
+  stats: PokemonStat[],
   types: PokemonType[];
   abilities: PokemonAbility[];
-  sprites: {
-    front_default: string;
-    front_shiny: string;
-    back_default: string;
-    back_shiny: string;
-  };
+  main_image: string;
+  images: PokemonImages[];
 }
 
 export interface Pokemon {
@@ -93,3 +91,13 @@ export interface GetPokemonsResult {
   };
   results: PokemonBasicDetail[];
 }
+
+export interface PokemonStat {
+  name: string;
+  base_stat: number;
+}
+
+export type PokemonMove = string;
+
+export type PokemonImages = string;
+

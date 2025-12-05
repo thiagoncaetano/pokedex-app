@@ -1,4 +1,5 @@
 import { PaginateEntity, PaginateParams } from '../../../common/pagination';
+import { PokemonDetail } from '../types';
 
 export interface PokemonGateway {
   getPokemonList(filters: {
@@ -14,20 +15,7 @@ export interface PokemonGateway {
     }>;
   }>;
 
-  getPokemonDetail(param: number|string): Promise<{
-    id: number;
-    name: string;
-    height: number;
-    weight: number;
-    types: Array<{ type: { name: string } }>;
-    abilities: Array<{ ability: { name: string } }>;
-    sprites: {
-      front_default: string;
-      front_shiny: string;
-      back_default: string;
-      back_shiny: string;
-    };
-  } | null>;
+  getPokemonDetail(param: number|string): Promise<PokemonDetail | null>;
 }
 
 export const POKEMON_GATEWAY_TOKEN = 'PokemonGateway';

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Param, Query, Body, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetPokemonDetailUseCase } from '../../application/use-cases/GetPokemonDetailUseCase';
-import { PokemonBasicInfoPresenter } from './pokemon.presenter';
+import { PokemonBasicInfoPresenter, PokemonPresenter } from './pokemon.presenter';
 import type { PokemonDetail, PokemonBasicDetail,  PokemonListItem } from '../../domain/types';
 import { PaginateParams } from '../../../common/pagination';
 import { GetPokemonBasicInfoUseCase } from '@/pokemons/application/use-cases/GetPokemonBasicInfoUseCase';
@@ -40,22 +40,10 @@ export class PokemonsController {
 
   @Get(':id')
   async getById(@Param('id') id: string): Promise<PokemonDetail> {
-    const result = await this.getPokemonDetailUseCase.execute({ id: Number(id) });
-    
-    return result || {
-      id: Number(id),
-      name: '',
-      height: 0,
-      weight: 0,
-      types: [],
-      abilities: [],
-      sprites: {
-        front_default: '',
-        front_shiny: '',
-        back_default: '',
-        back_shiny: '',
-      },
-    };
+    const numericId = Number(id);
+    const result = await this.getPokemonDetailUseCase.execute({ id: numericId });
+
+    return PokemonPresenter.presentDetail(result, numericId);
   }
 
   @Get('basic_infos/:param')

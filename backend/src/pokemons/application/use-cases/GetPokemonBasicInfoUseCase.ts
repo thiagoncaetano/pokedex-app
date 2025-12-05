@@ -22,7 +22,7 @@ export class GetPokemonBasicInfoUseCase {
     const basic: PokemonBasicDetail = {
       id: detail.id,
       name: detail.name,
-      image: detail.sprites.front_default,
+      image: detail.main_image,
     };
 
     return basic;
