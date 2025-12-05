@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Card } from './Card';
 import { PokeballSpinner } from '@/shared/ui/PokeballSpinner';
@@ -9,6 +9,7 @@ import { useColumnCount } from '@/hooks/useColumnCount';
 import { CARD_HEIGHT, GAP } from '@/shared/constants/virtualization';
 import { SkeletonGrid } from './SkeletonGrid';
 import { VirtualizedGrid } from '@/shared/ui/VirtualizedGrid';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 interface CardListProps {
   pokemons: BasicPokemon[];
@@ -41,26 +42,18 @@ export const CardList = React.memo<CardListProps>(({ pokemons, onCardClick, isLo
     overscan: 3,
   });
 
-
-  useEffect(() => {
-    const element = observerTarget.current;
-    if (isFetchingNextPage || !element || !onEndReached) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          onEndReached();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(element);
-
-    return () => {
-      if (element) observer.unobserve(element);
-    };
-  }, [isFetchingNextPage, onEndReached, pokemons]);
+  useIntersectionObserver(
+    observerTarget,
+    () => {
+      if (!isFetchingNextPage && onEndReached) {
+        onEndReached();
+      }
+    },
+    {
+      threshold: 0.1,
+      disabled: !onEndReached,
+    },
+  );
 
   // Show skeleton loading state
   if (isLoading || !!isSearchApiFetching) {

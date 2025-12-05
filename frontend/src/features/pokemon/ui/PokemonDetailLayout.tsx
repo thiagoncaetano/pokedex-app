@@ -37,6 +37,8 @@ export function PokemonDetailLayout({
             width={256}
             height={256}
             className="w-40 h-40 object-contain -mt-20 mb-4"
+            loading="eager"
+            priority
           />
 
           {children}

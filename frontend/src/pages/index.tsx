@@ -11,7 +11,6 @@ import { SessionEntity } from '@/features/auth';
 import { routes, pokemon_details_path } from '@/routes';
 import { PokemonGateway } from '@/features/pokemon/gateway';
 import { usePokemonList } from '@/features/pokemon/hooks/usePokemonList';
-import { usePokemonContext } from '@/features/pokemon/context/PokemonContext';
 import { useFilters } from '@/hooks/useFilters';
 import type { User } from '@/shared/models/auth';
 
@@ -30,21 +29,51 @@ interface HomePageProps {
 
 const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
   const router = useRouter();
-  const { pokemons, addPokemons } = usePokemonContext();
   const { getInfinitePokemons, getBasicInfosByParam } = usePokemonList();
   const { searchQuery, sortBy, debouncedSearchQuery, filterPokemons, setSearchQuery, setSortBy } = useFilters();
 
   const [initialLoading, setInitialLoading] = useState(true);
 
+  const [extraPokemons, setExtraPokemons] = useState<BasicPokemon[]>([]);
+
+  const {
+    data: infiniteData,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = getInfinitePokemons({ page: 2 });
+
+  const basePokemons = useMemo(() => {
+    const mergedById = new Map<number, BasicPokemon>();
+
+    const pushList = (list: BasicPokemon[]) => {
+      list.forEach((p) => {
+        if (!mergedById.has(p.id)) {
+          mergedById.set(p.id, p);
+        }
+      });
+    };
+
+    pushList(initialPokemons.results || []);
+
+    const pages = infiniteData?.pages ?? [];
+    pages.forEach((page: any) => {
+      if (page?.results) {
+        pushList(page.results as BasicPokemon[]);
+      }
+    });
+
+    pushList(extraPokemons);
+
+    return Array.from(mergedById.values());
+  }, [initialPokemons.results, infiniteData, extraPokemons]);
+
   const filtered = useMemo(() => {
-    return filterPokemons(pokemons, debouncedSearchQuery);
-  }, [pokemons, debouncedSearchQuery, sortBy, filterPokemons]);
- 
-  const { fetchNextPage, isFetchingNextPage } = getInfinitePokemons({ page: 2 });
+    return filterPokemons(basePokemons, debouncedSearchQuery);
+  }, [basePokemons, debouncedSearchQuery, sortBy, filterPokemons]);
 
   const { isFetching: isSearchApiFetching, refetch: refetchSearch } = getBasicInfosByParam(debouncedSearchQuery || '');
 
-  // Função para atualizar URL com IDs dos pokemons
+  // Function to update url IDS so we can get filtered results on first page load
   const updateUrlWithIds = (pokemonIds: number[]) => {
     const query = { ...router.query };
     
@@ -62,7 +91,6 @@ const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
   };
 
   useEffect(() => {
-    addPokemons(initialPokemons.results || []);
     setInitialLoading(false);
   }, []);
 
@@ -75,7 +103,11 @@ const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
         console.log('result dentro do effect', result);
         
         if (result.data) {
-          addPokemons([result.data]);
+          const pokemon = result.data as BasicPokemon;
+          setExtraPokemons(prev => {
+            const exists = prev.some(p => p.id === pokemon.id);
+            return exists ? prev : [...prev, pokemon];
+          });
           // Adicionar ID novo aos existentes na URL
           const existingIds = Array.isArray(router.query.ids) 
             ? router.query.ids as string[]
@@ -88,24 +120,14 @@ const HomePage: NextPage<HomePageProps> = ({ initialPokemons, user }) => {
     };
 
     search();
-  }, [debouncedSearchQuery, filtered.length, refetchSearch, addPokemons]);
+  }, [debouncedSearchQuery, filtered.length, refetchSearch, router.query.ids]);
 
   const handleScrollEnd = async () => {
     if (debouncedSearchQuery.trim()) return;
-    
     if (!isFetchingNextPage) {
-      const result = await fetchNextPage();
-      if (result?.data?.pages) {
-        const lastPage = result.data.pages[result.data.pages.length - 1];
-        if (lastPage?.results) {
-          addPokemons(lastPage.results);
-        }
-      }
+      await fetchNextPage();
     }
   };
-
-  // console.log("pokemons", pokemons)
-  console.log("filtered", filtered)
 
   return (
     <>

@@ -30,8 +30,8 @@ export const Card = React.memo<CardProps>(({ pokemon, onClick }) => {
         <AppImage
           src={pokemon.image}
           alt={pokemon.name}
-          width={160}
-          height={160}
+          width={128}
+          height={128}
           className="w-[60%] h-[60%] sm:w-[70%] sm:h-[70%] md:w-[75%] md:h-[75%] object-contain"
           loading="lazy"
         />
